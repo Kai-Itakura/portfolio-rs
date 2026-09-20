@@ -7,11 +7,12 @@
 
 | | 移行元 | 移行先 |
 | --- | --- | --- |
-| フレームワーク | Astro 5（完全静的出力） | Topcoat 0.5.0（サーバーレンダリング） |
+| フレームワーク | Astro 5（完全静的出力） | Topcoat 0.8.1（サーバーレンダリング） |
 | 言語 | TypeScript / Astro | Rust |
 | スタイル | Tailwind CSS v4（Node 経由） | Tailwind CSS v4（Topcoat 経由・Node 不要） |
 | 作品データ | Content Collections（Markdown） | 未定（下記「作品データ」参照） |
 | 画像 | `astro:assets`（webp + srcset 自動生成） | Topcoat の asset システム（最適化は自前） |
+| フォント | Google Fonts（CDN） | Topcoat の `font-fontsource` で自己ホスト |
 | ホスティング | Cloudflare Workers（静的アセット） | Google Cloud Run（コンテナ） |
 
 Cloud Run を選んだ理由: Topcoat は `#[tokio::main]` の常駐ランタイムを要求するため、
@@ -122,8 +123,7 @@ Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的
 - `canonical`
 - 🔴 **`google-site-verification`** — Search Console の所有権確認。消すと確認が外れる
 - `favicon` / `apple-touch-icon`
-- サイトマップ（`<link rel="sitemap">`）。**Topcoat は生成してくれない**ので自前で作る
-- Google Fonts（Kaisei Decol 700 / Pacifico / Roboto 500）
+- サイトマップ（`<link rel="sitemap">`）。Topcoat の `sitemap` feature を使う
 - Google Analytics（`PUBLIC_GA_ID` が設定されているときだけ出力する）
 
 `site` URL（OG / canonical / sitemap の絶対 URL 用）は
@@ -153,7 +153,8 @@ Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的
   `AssetBundle::load()` は実行ファイルの隣の `assets/` を読む
 - **`ENV HOST=0.0.0.0`** が必須。既定は `127.0.0.1` なので、これが無いと
   Cloud Run からの接続を受けられない。`PORT` は Cloud Run が注入する（8080）
-- `topcoat-cli` はアセットバンドルに必要。ビルドが重いので別ステージに分けてキャッシュする
+- `topcoat-cli` はアセットバンドルに必要。ビルドが重いので別ステージに分けてキャッシュする。
+  **ライブラリと同じバージョンを入れること**（ずれると CLI が警告を出す）
 - **ビルド時にネットワークが要る**（`build.rs` が Tailwind CLI を GitHub から取得する）。
   オフラインビルドが必要なら `BuildConfig::executable_env("TAILWIND_CLI")` を使う
 - `topcoat::start` は SIGTERM でグレースフルシャットダウンする（Cloud Run と相性が良い）

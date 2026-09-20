@@ -58,10 +58,22 @@ Geist Mono 500 を `letter-spacing: -0.03em` で詰めて使う。
 等幅は 1 文字が広いので、**英字の短文にだけ**使い、日本語の見出しには使わない。
 日本語で見出しが必要な箇所は `font-size` を上げずに `font-weight: 600` で処理する。
 
-配信方法はバンドル。`asset!` でハンドルを作り、`AssetBundle::load()` 経由で
-`/_topcoat/assets` から配る。[`topcoat-notes.md`](topcoat-notes.md) のアセットの節にある
-ハマりどころ（未使用ハンドルは最適化で消える / バイナリとバンドルは同じビルドから出す /
-バンドルに無いアセットはパニックする）がそのまま当てはまる。
+配信方法はバンドル。**Geist / Geist Mono は Fontsource のカタログにあるので、
+`font-fontsource` feature の `fontsource_font!` に `host: Asset` を付ければ、
+ビルド時にダウンロードして自分のオリジンから配信される。**
+サブセットとウェイトはマクロの引数で絞る（`subset: Latin` / `weight: [...]`）ので、
+woff2 を手で用意してサブセット化する必要は無い。
+
+| id | family | 利用可能なウェイト |
+| --- | --- | --- |
+| `geist` | Geist | 100–600（可変） |
+| `geist-mono` | Geist Mono | 100–600（可変） |
+
+上で要求している Geist Mono 500 と Geist 600 は両方とも範囲内。
+
+実体は Topcoat のアセットになるので、[`topcoat-notes.md`](topcoat-notes.md) の
+アセットの節にあるハマりどころ（未使用ハンドルは最適化で消える / バイナリとバンドルは
+同じビルドから出す / バンドルに無いアセットはパニックする）がそのまま当てはまる。
 
 ### 角丸（3 段だけ）
 
