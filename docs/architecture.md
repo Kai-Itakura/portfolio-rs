@@ -63,34 +63,36 @@ Astro のファイルベースルーティングとほぼ同じ考え方にな�
 
 ## 移植するコンポーネント
 
-旧リポジトリの 18 コンポーネント。素の `<script>` で書かれたインタラクションは、
-Topcoat の `$(...)` 式（サーバーでもブラウザでも動く型付き Rust）に置き換えられる可能性がある。
+旧リポジトリの 18 コンポーネントを F3 デザインに対応づけたもの。
+見た目の仕様は [`design.md`](design.md) を見ること。
 
-| 旧コンポーネント | 備考 |
+新デザインにクライアントサイドの状態は無い。ハンバーガーメニューも含めてすべて CSS で組むので、
+Topcoat の `$(...)` 式も Islands も使わない。
+
+| 旧コンポーネント | 移行後 |
 | --- | --- |
-| `BaseLayout.astro` | → `src/app.rs` の `#[layout]` |
-| `Header.astro` | スクロールでヘッダー背景。`scrollY > 450` のマジックナンバーは要見直し |
-| `Nav.astro` | ハンバーガーメニュー。`data-open` + `group-data-[open=true]:` で状態管理 |
-| `Footer.astro` | |
-| `Hero.astro` | バブルアニメーション（`setInterval` で `.bubble` を生成） |
-| `Container.astro` | |
-| `Profile.astro` | |
-| `Posts.astro` | |
-| `Hobby.astro` / `HobbyList.astro` | |
-| `Skills.astro` / `Bar.astro` | IntersectionObserver でスキルバーをカウントアップ |
-| `WorksHeader.astro` / `WorksBody.astro` / `WorksImage.astro` | |
-| `Pagination.astro` | 前後の作品ナビ |
-| `Button.astro` | |
-| `DefinitionList.astro` | |
+| `BaseLayout.astro` | `src/app.rs` の `#[layout]` |
+| `Header.astro` / `Nav.astro` | 共通コンポーネントのナビ。860px 以下でドロワー。開閉は `<input type="checkbox">` + `:has()` |
+| `Footer.astro` | 共通コンポーネントのフッター |
+| `Hero.astro` | 各ルートのヒーロー。トップは `$ whoami` の 4 行 |
+| `Container.astro` | 不要。左右余白はトークンで持つ |
+| `Profile.astro` | `/about` のプロフィール 2 カラム |
+| `Posts.astro` | 共通コンポーネントのカード |
+| `Hobby.astro` / `HobbyList.astro` | カードを使い回す |
+| `Skills.astro` / `Bar.astro` | `/about` の年表 + 使用件数 |
+| `WorksHeader.astro` / `WorksBody.astro` / `WorksImage.astro` | `/works/{slug}` の帯画像・本文 + メタ・スクショ 2 枚 |
+| `Pagination.astro` | `/works/{slug}` の前後ナビ |
+| `Button.astro` | 共通コンポーネントのボタン（ソリッド / ゴースト） |
+| `DefinitionList.astro` | `/works/{slug}` の `.metadl` |
 | `SnsLinks.astro` | FontAwesome の SVG |
 
 ### 前後の作品ナビゲーションの仕様
 
-旧サイトの仕様を踏襲して**意図的に逆順**にする（prev = 次のインデックス、next = 前のインデックス）。
-端では空になり、リンクが非表示になる。
+`order` の昇順に並べ、**`prev` が前の作品、`next` が次の作品**。
+端では片方が空になり、そちらのリンクは表示しない。
 
 Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的生成が無いので
-リクエスト時に解決する形になる。
+リクエスト時に解決する。
 
 ## 作品データ
 
@@ -129,11 +131,15 @@ Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的
 
 ## スタイリング
 
-- 旧 `src/styles/global.css` を**そのまま持ってくる**。`@theme` のトークン
-  （`--color-main` `--color-accent` `--font-pacifico` `--font-kaisei` `--font-roboto`）と
-  `@layer base` のベーススタイルはそのまま使える
-- モバイル（767px 以下）は `max-md:` プレフィックス
-- 旧 SCSS のピクセル値は `text-[80px]` のような arbitrary value で移植済み
+- トークン（色 9 / フォント 2 / 角丸 3 / ブレークポイント 2）は [`design.md`](design.md) にある。
+  `@theme` の中身はあの表がそのまま入る
+- ブレークポイントは **860px / 620px**。`@theme` で `--breakpoint-md` / `--breakpoint-sm` を
+  上書きして、記述は `max-md:` / `max-sm:` のまま使う
+- レスポンシブは **`@media` のみ**。`container-type` はどこにも付けない
+- 旧 `src/styles/global.css` から引き継ぐのは `@layer base` のベーススタイルだけ。
+  `@theme` のトークンは `design.md` のものに置き換える
+- 引き継ぐベーススタイルに `scroll-behavior: smooth` が含まれる。
+  `prefers-reduced-motion: reduce` で抑制すること
 
 ## デプロイ（Cloud Run）
 
@@ -153,16 +159,3 @@ Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的
 - `topcoat::start` は SIGTERM でグレースフルシャットダウンする（Cloud Run と相性が良い）
 - コスト対策: **`min-instances=0`（scale-to-zero）にすること。**
   これを 1 以上にすると常時課金になる
-
-## 移行時に直すデザイン上の問題
-
-旧サイトのデザインレビューで挙がった、移植のついでに直したいもの。
-
-| | 内容 |
-| --- | --- |
-| 色トークンの散在 | `@theme` にあるのは `--color-main` と `--color-accent` だけで、実際の色は生ハードコードで散らばっている（`#F08774` / `cadetblue` / `#5BAE6D` / `#facf63` / `#F08275` / `#333` / `rgb(58 61 62 / 0.5)`）。移植時に `@theme` へ集約する |
-| `prefers-reduced-motion` 未対応 | バブル・スキルバー・`scroll-behavior: smooth` が抑制設定を無視している |
-| スキルバー | パーセンテージ（60〜80）に根拠が無く、JS が無いと空のまま埋まらない。表現方法ごと再考する |
-| Hero | 100vh がほぼ単色 + 筆記体の名前だけで、情報量が無い |
-| `WorksImage` の `h-[200vw]` | 高さがビューポート幅の 2 倍。画面幅に比例して縦に伸びるのは意図的か要確認 |
-| `scrollY > 450` | ヘッダー背景の切り替え閾値がマジックナンバー。Hero の高さと連動していない |
