@@ -3,7 +3,9 @@
 移植後のビジュアル仕様。**実装前のスペックであり、実装そのものではない。**
 ここに書かれた値に沿って、コードはオーナーが自分で書く。
 
-- 出典: F3 案（全 4 ルートの PC / SP モック）— https://claude.ai/artifact/H59sKWnJyFady3NHffwUwu
+- **モック: [`design/f3.html`](design/f3.html)** — 全 4 ルートの PC / SP モック。
+  ブラウザで直接開ける単一ファイル（フォントと画像を埋め込み済み・約 450KB）。
+  オンライン版は https://claude.ai/artifact/H59sKWnJyFady3NHffwUwu （2026-08-05 時点の内容と同一）
 - 構成・ルーティング・データの扱いは [`architecture.md`](architecture.md) を見ること。
   このファイルは**見た目のトークンと各ルートのレイアウト**だけを扱う
 
