@@ -1,6 +1,7 @@
 use topcoat::{
     Result,
     asset::{Asset, asset},
+    tailwind,
     view::{Child, View, component, view},
 };
 
@@ -24,7 +25,7 @@ pub(crate) async fn base_layout(
 
     Ok(view! {
         <!DOCTYPE html>
-        <html lang=(site::LANG)>
+        <html class="bg-bg" lang=(site::LANG)>
             <head>
                 <title>(title.as_str())</title>
                 <meta name="description" content=(description) />
@@ -36,11 +37,17 @@ pub(crate) async fn base_layout(
                 <meta name="twitter:card" content="summary_large_image" />
                 <link rel="icon" href=(FAVICON) />
                 <link rel="apple-touch-icon" href=(APPLE_TOUCH_ICON) />
+                <link rel="stylesheet" href=(tailwind::stylesheet!())>
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 topcoat::dev::script()
             </head>
-            <body>(child)</body>
+            <body
+                class="bg-bg font-sans text-sm/[1.6] tracking-[-0.006em] text-fg \
+                       max-sm:text-[13.5px]/[1.6]"
+            >
+                (child)
+            </body>
         </html>
     })
 }

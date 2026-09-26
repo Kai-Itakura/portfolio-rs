@@ -1,0 +1,29 @@
+@import "tailwindcss" source(none);
+
+@source "./src/**/*.rs";
+
+@theme {
+  --color-bg: #000000;
+  --color-card: #0a0a0a;
+  --color-border: #1f1f1f;
+  --color-border-strong: #333333;
+  --color-fg: #ededed;
+  --color-body: #c6c6c6;
+  --color-muted: #a1a1a1;
+  --color-accent: #e8913c;
+  --color-ok: #62c073;
+
+  --font-sans:
+    "Geist", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+    "Noto Sans JP", sans-serif;
+  --font-mono:
+    "Geist Mono", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+    "Noto Sans JP", ui-monospace, monospace;
+
+  --radius-btn: 6px;
+  --radius-card: 10px;
+  --radius-pill: 999px;
+
+  --breakpoint-sm: 620px;
+  --breakpoint-md: 860px;
+}
