@@ -1,4 +1,4 @@
-mod about;
+pub(crate) mod about;
 
 use topcoat::{
     Result,

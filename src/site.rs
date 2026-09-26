@@ -11,3 +11,5 @@ pub(crate) const LOCALE: &str = "ja_JP";
 
 /// `og:type`。
 pub(crate) const OG_TYPE: &str = "website";
+
+pub(crate) const GITHUB_URL: &str = "https://github.com/Kai-Itakura";

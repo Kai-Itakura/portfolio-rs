@@ -5,7 +5,7 @@ use topcoat::{
     view::{Child, View, component, view},
 };
 
-use crate::site;
+use crate::{components::header::header, site};
 
 const FAVICON: Asset = asset!("assets/favicon.png");
 const APPLE_TOUCH_ICON: Asset = asset!("assets/apple-touch-icon.png");
@@ -46,6 +46,7 @@ pub(crate) async fn base_layout(
                 class="bg-bg font-sans text-sm/[1.6] tracking-[-0.006em] text-fg \
                        max-sm:text-[13.5px]/[1.6]"
             >
+                header()
                 (child)
             </body>
         </html>
