@@ -1,6 +1,7 @@
 use topcoat::{
     Result,
     asset::{Asset, asset},
+    icon::{IconData, icon, iconify},
     router::href,
     view::{View, component, view},
 };
@@ -8,6 +9,8 @@ use topcoat::{
 use crate::{app, site};
 
 const LOGO: Asset = asset!("assets/logo.png");
+const GITHUB: IconData = iconify::iconify_icon!("lucide:github");
+const MAIL: IconData = iconify::iconify_icon!("lucide:mail");
 
 #[component]
 pub(crate) async fn header() -> Result<impl View> {
@@ -50,6 +53,7 @@ pub(crate) async fn header() -> Result<impl View> {
                     target="_blank"
                     rel="noopener noreferrer"
                 >
+                    icon(data: GITHUB, size: 14)
                     "GitHub"
                 </a>
                 <a
@@ -58,6 +62,7 @@ pub(crate) async fn header() -> Result<impl View> {
                            transition-opacity duration-150 hover:opacity-88"
                     href="#contact"
                 >
+                    icon(data: MAIL, size: 14)
                     "Contact"
                 </a>
                 <label
@@ -105,6 +110,7 @@ pub(crate) async fn header() -> Result<impl View> {
                            hover:opacity-88"
                     href="#contact"
                 >
+                    icon(data: MAIL, size: 14)
                     "Contact"
                 </a>
             </div>

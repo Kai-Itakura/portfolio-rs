@@ -3,4 +3,9 @@ fn main() {
         .input("app.css")
         .render()
         .unwrap();
+
+    topcoat::icon::iconify::BuildConfig::new()
+        .icon_set("lucide")
+        .stage()
+        .unwrap();
 }
