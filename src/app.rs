@@ -3,11 +3,14 @@ pub(crate) mod about;
 use topcoat::{
     Result,
     asset::{AssetBundle, RouterBuilderAssetExt},
+    icon::{IconData, icon, iconify},
     router::{Router, RouterBuilderDiscoverExt, href, page},
     view::{View, component, view},
 };
 
-use crate::components::base_layout::base_layout;
+use crate::components::{base_layout::base_layout, work_card::work_card};
+
+const CHEVRON_RIGHT: IconData = iconify::iconify_icon!("lucide:chevron-right");
 
 pub fn router() -> Router {
     topcoat::router::module_router!()
@@ -21,6 +24,7 @@ pub(crate) async fn home() -> Result<impl View> {
     Ok(view! {
         base_layout(
             hero()
+            works_section()
         )
     })
 }
@@ -103,6 +107,55 @@ async fn hero() -> Result<impl View> {
                 >
                     "経歴を読む"
                 </a>
+            </div>
+        </section>
+    })
+}
+
+#[component]
+async fn works_section() -> Result<impl View> {
+    Ok(view! {
+        <section class="px-[max(18px,3vw)] py-[max(34px,4.4vw)]">
+            <div class="mb-5.5 flex items-end gap-4 max-sm:mb-4">
+                <div>
+                    <h2 class="text-[clamp(19px,2.2vw,26px)] font-semibold tracking-[-0.035em]">
+                        "Works"
+                    </h2>
+                    <p class="mt-1 text-[13.5px] tracking-normal text-muted">
+                        "個人で作ったものです。実務の案件は About の Timeline に書いています。"
+                    </p>
+                </div>
+                <a
+                    class="ml-auto flex items-center gap-1.25 text-[13.5px] tracking-normal \
+                           whitespace-nowrap text-muted hover:text-fg max-sm:text-[12.5px]"
+                    href="/works"
+                >
+                    "すべて見る"
+                    icon(data: CHEVRON_RIGHT, size: 13)
+                </a>
+            </div>
+            <div class="grid grid-cols-3 gap-4 max-md:grid-cols-1">
+                work_card(
+                    href: "/works/portfolio",
+                    path: "works/portfolio",
+                    title: "Kai Itakura | Portfolio",
+                    description: "Jamstack 構成のポートフォリオ。microCMS の内容を静的生成で配信。",
+                    tags: &["Next.js", "TypeScript", "Sass", "microCMS"],
+                )
+                work_card(
+                    href: "/works/sixhelmets",
+                    path: "works/sixhelmets",
+                    title: "sixhelmets.co.,ltd.",
+                    description: "アパレルブランドのコーポレートサイト。XD で設計し、素の JS で実装。",
+                    tags: &["JavaScript", "Sass", "XD", "Illustrator"],
+                )
+                work_card(
+                    href: "/works/sugutabe",
+                    path: "works/sugutabe",
+                    title: "スグ食べ",
+                    description: "オーガニック食材の LP。ヒアリングから導線設計まで担当。",
+                    tags: &["jQuery", "HTML5", "CSS3", "Illustrator"],
+                )
             </div>
         </section>
     })
