@@ -1,8 +1,8 @@
-# Topcoat 0.8.1 調査メモ
+# Topcoat 0.9.0 調査メモ
 
 実装の前に確かめた事実とハマりどころ。**答えではなく地図**として使う。
 
-調査日: 2026-09-20 / 対象バージョン: topcoat 0.8.1 / topcoat-cli 0.8.1 / rustc 1.98.1
+調査日: 2026-09-20（0.8.1）、2026-09-28 に 0.9.0 へ更新 / 対象バージョン: topcoat 0.9.0 / topcoat-cli 0.9.0
 
 ## 前提
 
@@ -10,7 +10,7 @@
 - **early-stage / experimental。破壊的変更が入ると明言されている**
 - サーバーレンダリング専用。**WASM は使わない**
 - 常駐 Tokio ランタイムが必要 → デプロイ先はコンテナ or VM
-- **MSRV は 1.98。** 0.7.0 で上がった。ツールチェインが古いと `cargo add` が
+- **MSRV は 1.98。** 0.7.0 で上がり、0.9.0 でも据え置き。ツールチェインが古いと `cargo add` が
   黙って古いバージョンを選ぶ（Cargo の MSRV 対応リゾルバの挙動）
 
 ## 🟢 一次情報はローカルにある
@@ -18,21 +18,25 @@
 **crate 自体がガイドを同梱している。** docs.rs や GitHub を見に行く前にここを読む。
 
 ```
-~/.cargo/registry/src/*/topcoat-0.8.1/
+~/.cargo/registry/src/*/topcoat-0.9.0/
 ├── CHANGELOG.md          # 破壊的変更はここに [**breaking**] で明示される
 ├── README.md
-├── docs/                 # 機能ごとのガイド 18 本
+├── docs/                 # 機能ごとのガイド
 │   ├── getting_started.md  router.md  asset.md  tailwind.md
 │   ├── font.md  runtime.md  view.md  context.md  ui.md  session.md
 │   └── cookie.md  icon.md  mail.md  htmx.md  datastar.md ...
 └── src/
 ```
 
+ガイドは 0.9.0 で全面的に書き直された（#435 / #439）。0.8.1 のときに読んだ内容を
+覚えていても、該当箇所は読み直すこと。
+
 サブクレートも同じ階層に展開されている。挙動の裏取りが要るときはこちら:
 
 ```
-topcoat-router-0.8.1/    topcoat-view-0.8.1/    topcoat-asset-0.8.1/
-topcoat-core-0.8.1/      topcoat-font-0.8.1/    topcoat-ui-0.8.1/
+topcoat-router-0.9.0/    topcoat-view-0.9.0/    topcoat-asset-0.9.0/
+topcoat-core-0.9.0/      topcoat-font-0.9.0/    topcoat-icon-0.9.0/
+topcoat-tailwind-0.9.0/  topcoat-ui-registry-0.9.0/
 ```
 
 `-macro` と `-grammar` がペアで存在する。`view!` や `#[page]` の構文定義が
@@ -51,7 +55,9 @@ cargo install topcoat-cli        # dev サーバー / アセットバンドル /
 ### 🔴 CLI とライブラリのバージョンを揃える
 
 `topcoat-cli` はライブラリと同じバージョン番号で公開されている。
-**両方 0.8.1 に揃えること。** ずれると CLI が警告を出す。
+**両方 0.9.0 に揃えること。** ずれると CLI が警告を出す。
+`Cargo.toml` の `[dependencies]` と `[build-dependencies]` の 2 箇所も同じ版にする。
+`0.x` 系の `"0.8.1"` は 0.9 への更新を許可しないので、`cargo update` だけでは上がらない。
 バンドラはコンパイル済みバイナリを走査する仕組みなので、走査側と埋め込み側で
 想定が食い違うと壊れる。
 
@@ -90,7 +96,7 @@ SIGTERM / Ctrl+C でグレースフルシャットダウンする。
 
 ## ルーティング
 
-`docs/router.md`（445 行）が一次情報。
+`docs/router.md` が一次情報。
 
 - 属性マクロ: `#[page("/users/{id}")]` / `#[layout("/")]` / `#[layer("/")]` /
   `#[route(GET "/api/health")]`
@@ -207,7 +213,7 @@ topcoat::router::request::{parts, method, uri, version, headers, content_type, e
 
 ### Geist はカタログにある
 
-`topcoat-font-0.8.1/fonts.json` を確認した。
+`topcoat-font-0.8.1/fonts.json` で確認した（0.9.0 のカタログでは未確認）。
 
 | id | family | weights | subsets | license |
 | --- | --- | --- | --- | --- |
@@ -233,17 +239,39 @@ topcoat::router::request::{parts, method, uri, version, headers, content_type, e
 - ほかに event handler / bind 属性 / `#[procedure]` / `#[shard]` がある
 - ドキュメント自身が **"highly experimental and fairly limited today"** と書いている
 
-## feature 一覧（0.8.1）
+## feature 一覧（0.9.0）
 
 ```
 default = asset compression cookie discover font icon router runtime serve session view
-その他 = alpine-ajax datastar font-fontsource htmx icon-iconify mail mail-smtp
+その他 = alpine-ajax anyhow datastar font-fontsource fs htmx icon-iconify mail mail-smtp
          multipart sitemap sse tailwind tower ui websocket
 full    = 全部
 ```
 
-このプロジェクトで追加が要るのは **`tailwind`**、フォントを Fontsource から取るなら
-**`font-fontsource`**、サイトマップを使うなら **`sitemap`**。
+0.9.0 で `anyhow` と `fs` が増えた。`fs` はディレクトリをそのまま配信する
+`DirectoryRoute` / `.serve_dir()` / `.public_dir()`（#424）のためのもの。
+
+このプロジェクトで有効にしているのは **`tailwind`** と **`icon-iconify`**。
+今後の候補は、フォントを Fontsource から取るなら **`font-fontsource`**、
+サイトマップを使うなら **`sitemap`**。
+
+## 0.8.1 → 0.9.0 で変わったこと
+
+CHANGELOG の `[**breaking**]` は 4 件。このプロジェクトで影響しうるのは 1 件だけ。
+
+| 変更 | 影響 |
+| --- | --- |
+| `view!` の identity 指定が `#[key(...)]` / `cx.keyed(...)` に変わった（#410） | `view!` の中の `for` ループ（`work_card` のタグ）が該当しうる |
+| `Error` の clone が安価になった（#396） | `Error` を自前で実装していないので無し |
+| ブラウザランタイムの作り直し（#413） | ランタイムを使っていないので無し |
+
+breaking ではないが使えそうな追加:
+
+- **`.public_dir()` / `.serve_dir()`**（`fs` feature）— `asset!` を通さずに
+  ディレクトリを配信できる
+- **`client_ip(cx)`** と信頼するプロキシの設定（#425）— Cloud Run の背後で
+  クライアント IP が要るときに使う
+- `topcoat dev` の状態を保つホットリロード（#421）
 
 ## 未実装 — 自分で埋める必要があるもの
 
@@ -263,7 +291,7 @@ full    = 全部
 ## 参考リンク
 
 - README（各機能のガイドへのリンク集）: https://github.com/tokio-rs/topcoat#learn-topcoat
-- docs.rs（バージョン固定）: https://docs.rs/topcoat/0.8.1
+- docs.rs（バージョン固定）: https://docs.rs/topcoat/0.9.0
 - 公式サンプル: https://github.com/tokio-rs/topcoat/tree/main/examples
 - Discord（tokio）: https://discord.gg/tokio
 

@@ -5,7 +5,9 @@
 
 - **モック: [`design/f3.html`](design/f3.html)** — 全 4 ルートの PC / SP モック。
   ブラウザで直接開ける単一ファイル（フォントと画像を埋め込み済み・約 450KB）。
-  オンライン版は https://claude.ai/artifact/H59sKWnJyFady3NHffwUwu （2026-08-05 時点の内容と同一）
+  オンライン版は https://claude.ai/artifact/H59sKWnJyFady3NHffwUwu 。ただし文言を職務経歴に
+  合わせた更新と Topcoat のバージョン表記は**ローカルの `f3.html` にしか入っていない**ので、
+  最新はこちら
 - 構成・ルーティング・データの扱いは [`architecture.md`](architecture.md) を見ること。
   このファイルは**見た目のトークンと各ルートのレイアウト**だけを扱う
 
