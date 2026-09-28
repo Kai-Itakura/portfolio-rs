@@ -1,6 +1,7 @@
 use topcoat::{
     Result,
     asset::{Asset, asset},
+    font::fontsource::fontsource_font,
     tailwind,
     view::{Child, View, component, view},
 };
@@ -37,6 +38,7 @@ pub(crate) async fn base_layout(
                 <meta name="twitter:card" content="summary_large_image" />
                 <link rel="icon" href=(FAVICON) />
                 <link rel="apple-touch-icon" href=(APPLE_TOUCH_ICON) />
+                topcoat::font::link(font: fontsource_font!(GEIST))
                 <link rel="stylesheet" href=(tailwind::stylesheet!())>
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
