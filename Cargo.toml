@@ -9,7 +9,6 @@ topcoat = { version = "0.9.0", features = [
   "icon-iconify",
   "tailwind",
   "font-fontsource",
-  "ui",
 ] }
 
 [build-dependencies]
