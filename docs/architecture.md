@@ -112,6 +112,59 @@ Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的
 
 起動時に一度読んでメモリに載せる想定。作品数が少ないのでDBは不要。
 
+## 使用技術（Stack パネル）
+
+トップと `/about` の「使用件数」のパネル。**件数はハードコードせず、案件ごとの使用技術から
+コードで数える。** 最終的には、転職活動用に別で管理しているアプリ（プロジェクト・技術スタック・
+STAR ログ）と連携して出す。v1 の案件データは、その置き換えを見越した形にしておく。
+
+### 数える対象
+
+- **数えるもの**：言語・フレームワーク・DB・開発ツール（AWS、Docker、Kubernetes、GitHub Actions など）
+- **数えないもの**：開発に直接関係しないツール（Jira / Slack / Figjam / Backlog / Confluence）、
+  デザインツール、AI ツール、Git クライアントとホスティング、ホスティング・SaaS・EC 基盤、OS
+- **表記**：`HTML` / `CSS`、`React Router v7`、`PowerShell`、`GitHub Actions`。
+  AWS のサービス名（CloudFront、Aurora など）は `AWS` にまとめる
+- 元データは職務経歴書の技術欄。業務内容の本文にだけ出てくる技術は、個別に判断して足す（React）か外す（jQuery）
+
+### 案件（2026-09-30 時点・10 件）
+
+| # | 期間 | 案件 | 技術 |
+| --- | --- | --- | --- |
+| 0 | 22/06〜22/12 | デジハリ（卒業制作ほか） | JavaScript, HTML, Sass |
+| 1 | 23/01〜23/06 | 自己学習・ポートフォリオ | TypeScript, Next.js, Sass, React |
+| 2 | 23/07〜23/07 | エンタメ Web サイト運用 | TypeScript, Next.js, Sass, CSS, AWS, GitHub Actions |
+| 3 | 23/08〜23/10 | 食品 toC EC 改修 | JavaScript, HTML, CSS |
+| 4 | 23/11〜25/02 | デジタル教科書 新機能開発 | TypeScript, Node.js |
+| 5 | 25/03〜25/09 | toB EC リプレイス | TypeScript, Node.js, Tailwind CSS, AWS, Docker, MySQL |
+| 6 | 25/08〜25/09 | 自社サイトリプレイス | TypeScript, Sass, React, React Router v7, Docker |
+| 7 | 26/01〜26/06 | 工場生産管理システム | Go, TypeScript, React, React Router v7, Docker, Kubernetes, AWS, GitHub Actions |
+| x | 期間なし | 個人開発 | TypeScript, Go, React, Next.js, NestJS, Docker, Prisma, AWS, SQL, PostgreSQL |
+| 9 | 26/07〜現在 | このサイト | Rust, Topcoat, Tailwind CSS |
+
+このサイトの Cloud Run は、デプロイした時点で足す。
+
+### 並び順
+
+1. 件数が多い順
+2. 最後に使った時期（案件の終了月）が新しい順
+3. 使い始めた時期（案件の開始月）が新しい順
+4. 名前順
+
+**個人開発は 2 と 3 で最も古い扱いにする。** 件数には含めるが、同じ件数どうしの比較では
+実務とこのサイトを優先する。3 は「最近身に付けた技術ほど前に出す」ための基準で、
+これが無いと 26/06 で並ぶ Go が名前順で GitHub Actions の後ろに回り、トップから外れる。
+
+表示件数はトップが 8 件（2 列 × 4 行）、`/about` が 10 件。上の案件データでの結果は次のとおり。
+
+| 順 | 技術 | 件数 |
+| --- | --- | --- |
+| 1 | TypeScript | 7 |
+| 2〜5 | Docker, AWS, React, Sass | 4 |
+| 6 | Next.js | 3 |
+| 7〜8 | Tailwind CSS, Go | 2 |
+| 9〜10（`/about` のみ） | React Router v7, GitHub Actions | 2 |
+
 ## メタ情報（移行時に失ってはいけないもの）
 
 旧 `BaseLayout.astro` / `src/lib/constants.ts` にあるもの:
