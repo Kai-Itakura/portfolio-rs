@@ -234,12 +234,17 @@ h2.sec { font-weight: 600; font-size: 22px; letter-spacing: -0.025em; margin: 10
 .fx .panelbox { border: 1px solid var(--bd); border-radius: 10px; background: var(--card); padding: 18px 18px 20px; }
 .fx .panelbox .lab { font-family: var(--mono); font-size: 11px; color: var(--mut); margin-bottom: 14px; overflow-wrap: anywhere; }
 .fx .usage { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 32px; }
-.fx .usage li { display: grid; grid-template-columns: 118px 1fr auto; gap: 12px; align-items: center; font-size: 12.5px; padding: 5px 0; }
+.fx .usage li { display: grid; grid-template-columns: 118px 1fr auto; gap: 12px; align-items: center; font-size: 12.5px; padding: 8px 0; }
 .fx .usage .lbl { font-family: var(--mono); color: var(--fg); }
 .fx .usage .g { display: flex; gap: 3px; }
 .fx .usage .g i { width: 11px; height: 11px; background: var(--bd); border-radius: 2px; }
 .fx .usage .g i.on { background: var(--acc); }
 .fx .usage .n { font-family: var(--mono); font-size: 11px; color: var(--mut); }
+.fx .ugrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 32px; }
+.fx .ug .usage { position: relative; row-gap: 0; column-gap: 64px; }
+.fx .ug .usage::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; border-left: 1px solid var(--bd); }
+.fx .ug .ugh { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: 12px; font-weight: 600; padding-bottom: 7px; margin-bottom: 8px; border-bottom: 1px solid var(--bd); }
+.fx .ug .ugh .c { font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--mut); }
 
 /* --- プロフィール / 年表（/about） --- */
 .fx .prof { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 30px; align-items: start; }
@@ -295,7 +300,8 @@ h2.sec { font-weight: 600; font-size: 22px; letter-spacing: -0.025em; margin: 10
   .fx .navlinks { display: none; }
   .fx .nav .right .btn.ghost { display: none; }
   .fx .burger { display: flex; }
-  .fx .usage { grid-template-columns: minmax(0, 1fr); }
+  .fx .ug .usage { grid-template-columns: minmax(0, 1fr); }
+  .fx .ug .usage::before { display: none; }
   .fx .prof { grid-template-columns: minmax(0, 1fr); gap: 22px; }
   .fx .prof .ph { max-width: 190px; }
   .fx .detail { grid-template-columns: minmax(0, 1fr); gap: 26px; }
@@ -467,16 +473,42 @@ h2.sec { font-weight: 600; font-size: 22px; letter-spacing: -0.025em; margin: 10
         <div class="blk" style="padding-top:0">
           <div class="panelbox">
             <p class="lab">$ grep -c -o -f tools.txt projects/*</p>
-            <ul class="usage">
-              <li><span class="lbl">typescript</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="n">7 projects</span></li>
-              <li><span class="lbl">aws</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
-              <li><span class="lbl">docker</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
-              <li><span class="lbl">sass</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
-              <li><span class="lbl">react</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="n">3 projects</span></li>
-              <li><span class="lbl">next.js</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="n">3 projects</span></li>
-              <li><span class="lbl">go</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
-              <li><span class="lbl">node.js</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
-            </ul>
+            <div class="ugrid">
+              <div class="ug">
+                <p class="ugh"><span class="ja">言語</span><span class="c">4 / 9</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">typescript</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="n">7 projects</span></li>
+                  <li><span class="lbl">sass</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">go</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">node.js</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                </ul>
+              </div>
+              <div class="ug">
+                <p class="ugh"><span class="ja">ライブラリ・フレームワーク</span><span class="c">4 / 7</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">react</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">next.js</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="n">3 projects</span></li>
+                  <li><span class="lbl">tailwind css</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">react router v7</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                </ul>
+              </div>
+              <div class="ug">
+                <p class="ugh"><span class="ja">DB</span><span class="c">2 / 2</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">mysql</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                  <li><span class="lbl">postgresql</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                </ul>
+              </div>
+              <div class="ug">
+                <p class="ugh"><span class="ja">インフラ・開発ツール</span><span class="c">4 / 4</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">docker</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">aws</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">github actions</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">kubernetes</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
         <div class="footer"><span>© 2026 Kai Itakura</span><span>Built with Rust + Topcoat 0.9.0</span><span class="r"><a href="#r-top">GitHub</a><a href="#r-top">Email</a></span></div>
@@ -532,16 +564,42 @@ h2.sec { font-weight: 600; font-size: 22px; letter-spacing: -0.025em; margin: 10
         <div class="blk" style="padding-top:0">
           <div class="panelbox">
             <p class="lab">$ grep -c -o -f tools.txt projects/*</p>
-            <ul class="usage">
-              <li><span class="lbl">typescript</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="n">7 projects</span></li>
-              <li><span class="lbl">aws</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
-              <li><span class="lbl">docker</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
-              <li><span class="lbl">sass</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
-              <li><span class="lbl">react</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="n">3 projects</span></li>
-              <li><span class="lbl">next.js</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="n">3 projects</span></li>
-              <li><span class="lbl">go</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
-              <li><span class="lbl">node.js</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
-            </ul>
+            <div class="ugrid">
+              <div class="ug">
+                <p class="ugh"><span class="ja">言語</span><span class="c">4 / 9</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">typescript</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="n">7 projects</span></li>
+                  <li><span class="lbl">sass</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">go</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">node.js</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                </ul>
+              </div>
+              <div class="ug">
+                <p class="ugh"><span class="ja">ライブラリ・フレームワーク</span><span class="c">4 / 7</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">react</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">next.js</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="n">3 projects</span></li>
+                  <li><span class="lbl">tailwind css</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">react router v7</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                </ul>
+              </div>
+              <div class="ug">
+                <p class="ugh"><span class="ja">DB</span><span class="c">2 / 2</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">mysql</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                  <li><span class="lbl">postgresql</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                </ul>
+              </div>
+              <div class="ug">
+                <p class="ugh"><span class="ja">インフラ・開発ツール</span><span class="c">4 / 4</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">docker</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">aws</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">github actions</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">kubernetes</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
         <div class="footer"><span>© 2026 Kai Itakura</span><span>Built with Rust + Topcoat 0.9.0</span><span class="r"><a href="#r-top">GitHub</a><a href="#r-top">Email</a></span></div>
@@ -555,7 +613,7 @@ h2.sec { font-weight: 600; font-size: 22px; letter-spacing: -0.025em; margin: 10
           <dt>kv リスト</dt><dd>ラベル列を <b>72px</b> 固定に。日本語の値は 2 行に折り返す</dd>
           <dt>CTA</dt><dd><code>flex: 1</code> で画面幅いっぱい</dd>
           <dt>カード</dt><dd>3 列 → <b>1 列</b>、画像を 16:10 → 16:9 に</dd>
-          <dt>使用件数</dt><dd>2 列 → <b>1 列</b>、ラベル列を 118px → 104px に詰める</dd>
+          <dt>使用件数</dt><dd>カテゴリの 2 列 → <b>1 列</b>、ラベル列を 118px → 104px に詰める</dd>
         </dl>
         <p class="hint">↑ スクロールできます / ハンバーガーは実際に開きます</p>
       </div>
@@ -578,7 +636,7 @@ h2.sec { font-weight: 600; font-size: 22px; letter-spacing: -0.025em; margin: 10
         </p>
         <p class="why">
           旧サイトの「60〜80%」という自己申告の数値は、読み手にとって情報量がゼロでした。
-          年表は事実の列なので検証でき、使用件数は <code>tools[]</code> から自動で出ます。
+          年表は事実の列なので検証でき、使用件数は案件ごとの使用技術から自動で出ます。言語・ライブラリ・フレームワーク・DB・インフラ・開発ツールの 4 カテゴリに分け、トップは各上位 4 件、<code>/about</code> は全件です。
           Hobby は旧サイトの内容をそのまま残していますが、カードコンポーネントを使い回しています。
         </p>
       </div>
@@ -651,18 +709,50 @@ h2.sec { font-weight: 600; font-size: 22px; letter-spacing: -0.025em; margin: 10
           <div class="sechead"><div><h2>Stack</h2><p class="ja">自己申告の割合ではなく、実務と個人開発で実際に使った案件数です。</p></div></div>
           <div class="panelbox">
             <p class="lab">$ grep -c -o -f tools.txt projects/*</p>
-            <ul class="usage">
-              <li><span class="lbl">typescript</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="n">7 projects</span></li>
-              <li><span class="lbl">aws</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
-              <li><span class="lbl">docker</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
-              <li><span class="lbl">sass</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
-              <li><span class="lbl">react</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="n">3 projects</span></li>
-              <li><span class="lbl">next.js</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="n">3 projects</span></li>
-              <li><span class="lbl">go</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
-              <li><span class="lbl">node.js</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
-              <li><span class="lbl">react router</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
-              <li><span class="lbl">javascript</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
-            </ul>
+            <div class="ugrid">
+              <div class="ug">
+                <p class="ugh"><span class="ja">言語</span><span class="c">9</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">typescript</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="n">7 projects</span></li>
+                  <li><span class="lbl">sass</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">go</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">node.js</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">css</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">html</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">javascript</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">rust</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                  <li><span class="lbl">sql</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                </ul>
+              </div>
+              <div class="ug">
+                <p class="ugh"><span class="ja">ライブラリ・フレームワーク</span><span class="c">7</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">react</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">next.js</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="n">3 projects</span></li>
+                  <li><span class="lbl">tailwind css</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">react router v7</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">topcoat</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                  <li><span class="lbl">nestjs</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                  <li><span class="lbl">prisma</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                </ul>
+              </div>
+              <div class="ug">
+                <p class="ugh"><span class="ja">DB</span><span class="c">2</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">mysql</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                  <li><span class="lbl">postgresql</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                </ul>
+              </div>
+              <div class="ug">
+                <p class="ugh"><span class="ja">インフラ・開発ツール</span><span class="c">4</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">docker</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">aws</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">github actions</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">kubernetes</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
         <div class="blk" style="padding-top:0">
@@ -742,18 +832,50 @@ h2.sec { font-weight: 600; font-size: 22px; letter-spacing: -0.025em; margin: 10
           <div class="sechead"><div><h2>Stack</h2><p class="ja">自己申告の割合ではなく、実務と個人開発で実際に使った案件数です。</p></div></div>
           <div class="panelbox">
             <p class="lab">$ grep -c -o -f tools.txt projects/*</p>
-            <ul class="usage">
-              <li><span class="lbl">typescript</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="n">7 projects</span></li>
-              <li><span class="lbl">aws</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
-              <li><span class="lbl">docker</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
-              <li><span class="lbl">sass</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
-              <li><span class="lbl">react</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="n">3 projects</span></li>
-              <li><span class="lbl">next.js</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="n">3 projects</span></li>
-              <li><span class="lbl">go</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
-              <li><span class="lbl">node.js</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
-              <li><span class="lbl">react router</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
-              <li><span class="lbl">javascript</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
-            </ul>
+            <div class="ugrid">
+              <div class="ug">
+                <p class="ugh"><span class="ja">言語</span><span class="c">9</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">typescript</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span class="n">7 projects</span></li>
+                  <li><span class="lbl">sass</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">go</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">node.js</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">css</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">html</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">javascript</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">rust</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                  <li><span class="lbl">sql</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                </ul>
+              </div>
+              <div class="ug">
+                <p class="ugh"><span class="ja">ライブラリ・フレームワーク</span><span class="c">7</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">react</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">next.js</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i></span><span class="n">3 projects</span></li>
+                  <li><span class="lbl">tailwind css</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">react router v7</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">topcoat</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                  <li><span class="lbl">nestjs</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                  <li><span class="lbl">prisma</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                </ul>
+              </div>
+              <div class="ug">
+                <p class="ugh"><span class="ja">DB</span><span class="c">2</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">mysql</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                  <li><span class="lbl">postgresql</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                </ul>
+              </div>
+              <div class="ug">
+                <p class="ugh"><span class="ja">インフラ・開発ツール</span><span class="c">4</span></p>
+                <ul class="usage">
+                  <li><span class="lbl">docker</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">aws</span><span class="g"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="n">4 projects</span></li>
+                  <li><span class="lbl">github actions</span><span class="g"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">2 projects</span></li>
+                  <li><span class="lbl">kubernetes</span><span class="g"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="n">1 project</span></li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
         <div class="blk" style="padding-top:0">
@@ -783,7 +905,7 @@ h2.sec { font-weight: 600; font-size: 22px; letter-spacing: -0.025em; margin: 10
           <dt>年表</dt><dd><b>変更なし</b>。項目間の余白を 22px → 18px に詰めるだけ</dd>
           <dt>metadl</dt><dd>ラベル列 100px → <b>84px</b>、11.5px に</dd>
           <dt>Hobby</dt><dd>3 列 → <b>1 列</b>。画像は 4:3 のまま</dd>
-          <dt>要検討</dt><dd>SP だと <b>ページがかなり縦に長くなります</b>（年表 7 項目 + 使用件数 10 行 + Hobby 3 件）。Hobby を折りたたむか、<code>/about</code> をさらに分けるかの判断が要ります</dd>
+          <dt>要検討</dt><dd>SP だと <b>ページがかなり縦に長くなります</b>（年表 6 項目 + 使用件数 22 行 + Hobby 3 件）。Hobby を折りたたむか、<code>/about</code> をさらに分けるかの判断が要ります</dd>
         </dl>
         <p class="hint">↑ スクロールできます</p>
       </div>

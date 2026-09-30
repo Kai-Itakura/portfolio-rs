@@ -118,14 +118,34 @@ Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的
 コードで数える。** 最終的には、転職活動用に別で管理しているアプリ（プロジェクト・技術スタック・
 STAR ログ）と連携して出す。v1 の案件データは、その置き換えを見越した形にしておく。
 
-### 数える対象
+### カテゴリ
 
-- **数えるもの**：言語・フレームワーク・DB・開発ツール（AWS、Docker、Kubernetes、GitHub Actions など）
-- **数えないもの**：開発に直接関係しないツール（Jira / Slack / Figjam / Backlog / Confluence）、
-  デザインツール、AI ツール、Git クライアントとホスティング、ホスティング・SaaS・EC 基盤、OS
-- **表記**：`HTML` / `CSS`、`React Router v7`、`PowerShell`、`GitHub Actions`。
+別システムと同じ 5 カテゴリで持つ。カテゴリは固定。
+
+| カテゴリ | パネル | 今のデータで入るもの |
+| --- | --- | --- |
+| 言語 | 表示する | TypeScript, Sass, Go, Node.js, CSS, HTML, JavaScript, Rust, SQL |
+| ライブラリ・フレームワーク | 表示する | React, Next.js, Tailwind CSS, React Router v7, Topcoat, NestJS, Prisma |
+| DB | 表示する | MySQL, PostgreSQL |
+| インフラ・開発ツール | 表示する | Docker, AWS, GitHub Actions, Kubernetes |
+| 業務ツール | 表示しない | （v1 ではデータにも持たない） |
+
+分類で迷ったものの扱い: HTML / CSS / Sass / SQL / Node.js は言語、Tailwind CSS と Prisma は
+ライブラリ・フレームワーク。別システムに出した指示ではカテゴリ名が「フレームワーク」なので、
+連携するときに名前をそろえる。
+
+### 数える対象（v1）
+
+- **数えるもの**：上の表示する 4 カテゴリに入るもの
+- **数えないもの**：業務ツール（Jira / Slack / Figjam / Backlog / Confluence）、デザインツール、
+  AI ツール、Git クライアントとホスティング、ホスティング・SaaS・EC 基盤、OS。
+  加えて、個別に外したもの（Smarty / Python / PowerShell / PHP / Symfony / Twig / Fiber）
+- **表記**：`HTML` / `CSS`、`React Router v7`、`GitHub Actions`。
   AWS のサービス名（CloudFront、Aurora など）は `AWS` にまとめる
 - 元データは職務経歴書の技術欄。業務内容の本文にだけ出てくる技術は、個別に判断して足す（React）か外す（jQuery）
+
+業務ツール以外で外したものや、本文から足し引きしたものを連携後にどう再現するかは、
+システム連携ができた時点で決める。
 
 ### 案件（2026-09-30 時点・10 件）
 
@@ -146,6 +166,8 @@ STAR ログ）と連携して出す。v1 の案件データは、その置き換
 
 ### 並び順
 
+カテゴリの中で、次の順に比べる。
+
 1. 件数が多い順
 2. 最後に使った時期（案件の終了月）が新しい順
 3. 使い始めた時期（案件の開始月）が新しい順
@@ -153,17 +175,23 @@ STAR ログ）と連携して出す。v1 の案件データは、その置き換
 
 **個人開発は 2 と 3 で最も古い扱いにする。** 件数には含めるが、同じ件数どうしの比較では
 実務とこのサイトを優先する。3 は「最近身に付けた技術ほど前に出す」ための基準で、
-これが無いと 26/06 で並ぶ Go が名前順で GitHub Actions の後ろに回り、トップから外れる。
+これが無いと 26/06 で並ぶ Go が名前順で後ろに回る。
 
-表示件数はトップが 8 件（2 列 × 4 行）、`/about` が 10 件。上の案件データでの結果は次のとおり。
+### 表示
 
-| 順 | 技術 | 件数 |
-| --- | --- | --- |
-| 1 | TypeScript | 7 |
-| 2〜5 | Docker, AWS, React, Sass | 4 |
-| 6 | Next.js | 3 |
-| 7〜8 | Tailwind CSS, Go | 2 |
-| 9〜10（`/about` のみ） | React Router v7, GitHub Actions | 2 |
+- パネルの中で 4 カテゴリを**縦に 1 列**に積み、各カテゴリの中は**2 列**で並べる。860px 以下ではカテゴリの中も 1 列
+- **トップは各カテゴリ上位 4 件まで**、`/about` は全件。2 列で並べるので、トップは偶数件にして行を埋める。
+  トップは見出しの右に「4 / 9」のように全体の何件中何件かを出し、`/about` に続きがあることを示す
+- ゲージは 7 マスで全カテゴリ共通。カテゴリごとに最大値を変えると、DB の 1 件が満タンに見えるため
+
+上の案件データでの結果は次のとおり（太字がトップに出るもの）。
+
+| カテゴリ | 並び（件数） |
+| --- | --- |
+| 言語 | **TypeScript 7 → Sass 4 → Go 2 → Node.js 2** → CSS 2 → HTML 2 → JavaScript 2 → Rust 1 → SQL 1 |
+| ライブラリ・フレームワーク | **React 4 → Next.js 3 → Tailwind CSS 2 → React Router v7 2** → Topcoat 1 → NestJS 1 → Prisma 1 |
+| DB | **MySQL 1 → PostgreSQL 1** |
+| インフラ・開発ツール | **Docker 4 → AWS 4 → GitHub Actions 2 → Kubernetes 1** |
 
 ## メタ情報（移行時に失ってはいけないもの）
 
