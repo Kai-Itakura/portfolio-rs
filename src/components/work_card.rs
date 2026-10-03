@@ -27,11 +27,15 @@ pub(crate) async fn work_card(
                 aria-hidden="true"
             ></span>
             <div class="px-4 pt-4 pb-4.25">
-                <span class="mb-1.25 block font-mono text-[10.5px] text-accent opacity-85">
+                <span
+                    class="mb-1.25 block font-mono text-[10.5px] text-accent opacity-85"
+                >
                     (path)
                 </span>
                 <div class="flex items-center gap-2">
-                    <h3 class="text-[14.5px] font-medium tracking-[-0.02em]">(title)</h3>
+                    <h3 class="text-[14.5px] font-medium tracking-[-0.02em]">
+                        (title)
+                    </h3>
                     <span
                         class="ml-auto inline-flex shrink-0 text-muted \
                                transition-[translate,color] duration-180 \

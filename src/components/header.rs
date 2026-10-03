@@ -19,19 +19,26 @@ pub(crate) async fn header() -> Result<impl View> {
             class="group relative z-3 flex h-14 items-center gap-6.5 \
                    border-b border-border px-[max(18px,3vw)] max-sm:h-13 max-sm:gap-3"
         >
-            <span class="flex items-center gap-2.25 text-sm font-semibold whitespace-nowrap">
+            <span
+                class="flex items-center gap-2.25 text-sm font-semibold whitespace-nowrap"
+            >
                 <img class="size-5.5" src=(LOGO) alt="" width="22" height="22" />
                 " Kai Itakura"
             </span>
 
             <ul class="flex gap-5.5 text-[13.5px] text-muted max-md:hidden">
                 <li>
-                    <a class="hover:text-fg aria-[current]:text-fg" href=(href!(app::home))>
+                    <a
+                        class="hover:text-fg aria-[current]:text-fg"
+                        href=(href!(app::home))
+                    >
                         "Home"
                     </a>
                 </li>
                 <li>
-                    <a class="hover:text-fg aria-[current]:text-fg" href="/works">"Works"</a>
+                    <a class="hover:text-fg aria-[current]:text-fg" href="/works">
+                        "Works"
+                    </a>
                 </li>
                 <li>
                     <a
@@ -94,7 +101,10 @@ pub(crate) async fn header() -> Result<impl View> {
                 >
                     "Home"
                 </a>
-                <a class="border-b border-border px-0.5 py-2.75 text-[15px]" href="/works">
+                <a
+                    class="border-b border-border px-0.5 py-2.75 text-[15px]"
+                    href="/works"
+                >
                     "Works"
                 </a>
                 <a

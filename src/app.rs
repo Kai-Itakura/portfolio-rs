@@ -118,7 +118,9 @@ async fn works_section() -> Result<impl View> {
         <section class="px-[max(18px,3vw)] py-[max(34px,4.4vw)]">
             <div class="mb-5.5 flex items-end gap-4 max-sm:mb-4">
                 <div>
-                    <h2 class="text-[clamp(19px,2.2vw,26px)] font-semibold tracking-[-0.035em]">
+                    <h2
+                        class="text-[clamp(19px,2.2vw,26px)] font-semibold tracking-[-0.035em]"
+                    >
                         "Works"
                     </h2>
                     <p class="mt-1 text-[13.5px] tracking-normal text-muted">
@@ -140,21 +142,21 @@ async fn works_section() -> Result<impl View> {
                     path: "works/portfolio",
                     title: "Kai Itakura | Portfolio",
                     description: "Jamstack 構成のポートフォリオ。microCMS の内容を静的生成で配信。",
-                    tags: &["Next.js", "TypeScript", "Sass", "microCMS"],
+                    tags: &["Next.js", "TypeScript", "Sass", "microCMS"]
                 )
                 work_card(
                     href: "/works/sixhelmets",
                     path: "works/sixhelmets",
                     title: "sixhelmets.co.,ltd.",
                     description: "アパレルブランドのコーポレートサイト。XD で設計し、素の JS で実装。",
-                    tags: &["JavaScript", "Sass", "XD", "Illustrator"],
+                    tags: &["JavaScript", "Sass", "XD", "Illustrator"]
                 )
                 work_card(
                     href: "/works/sugutabe",
                     path: "works/sugutabe",
                     title: "スグ食べ",
                     description: "オーガニック食材の LP。ヒアリングから導線設計まで担当。",
-                    tags: &["jQuery", "HTML5", "CSS3", "Illustrator"],
+                    tags: &["jQuery", "HTML5", "CSS3", "Illustrator"]
                 )
             </div>
         </section>
