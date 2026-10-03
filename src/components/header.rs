@@ -3,10 +3,14 @@ use topcoat::{
     asset::{Asset, asset},
     icon::{IconData, icon, iconify},
     router::href,
-    view::{View, component, view},
+    view::{View, class, component, view},
 };
 
-use crate::{app, site};
+use crate::{
+    app,
+    components::button::{ButtonSize, ButtonVariant, button_variants},
+    site,
+};
 
 const LOGO: Asset = asset!("assets/logo.png");
 const GITHUB: IconData = iconify::iconify_icon!("lucide:github");
@@ -52,10 +56,10 @@ pub(crate) async fn header() -> Result<impl View> {
 
             <span class="ml-auto flex items-center gap-2.5">
                 <a
-                    class="inline-flex h-8 items-center gap-1.5 rounded-btn border \
-                           border-border-strong px-3.25 text-[13.5px] font-medium \
-                           whitespace-nowrap text-fg transition-colors duration-150 \
-                           hover:border-muted hover:bg-card max-md:hidden"
+                    class=(class!(
+                        button_variants(ButtonVariant::Ghost, ButtonSize::Small),
+                        "max-md:hidden",
+                    ))
                     href=(site::GITHUB_URL)
                     target="_blank"
                     rel="noopener noreferrer"
@@ -64,9 +68,7 @@ pub(crate) async fn header() -> Result<impl View> {
                     "GitHub"
                 </a>
                 <a
-                    class="inline-flex h-8 items-center gap-1.5 rounded-btn bg-fg px-3.25 \
-                           text-[13.5px] font-medium whitespace-nowrap text-bg \
-                           transition-opacity duration-150 hover:opacity-88"
+                    class=(button_variants(ButtonVariant::Primary, ButtonSize::Small))
                     href="#contact"
                 >
                     icon(data: MAIL, size: 14)
@@ -114,10 +116,10 @@ pub(crate) async fn header() -> Result<impl View> {
                     "About"
                 </a>
                 <a
-                    class="mt-2.5 inline-flex h-8 items-center justify-center gap-1.5 \
-                           rounded-btn bg-fg px-3.25 text-[13.5px] font-medium \
-                           whitespace-nowrap text-bg transition-opacity duration-150 \
-                           hover:opacity-88"
+                    class=(class!(
+                        button_variants(ButtonVariant::Primary, ButtonSize::Small),
+                        "mt-2.5 justify-center",
+                    ))
                     href="#contact"
                 >
                     icon(data: MAIL, size: 14)

@@ -5,10 +5,14 @@ use topcoat::{
     asset::{AssetBundle, RouterBuilderAssetExt},
     icon::{IconData, icon, iconify},
     router::{Router, RouterBuilderDiscoverExt, href, page},
-    view::{View, component, view},
+    view::{View, class, component, view},
 };
 
-use crate::components::{base_layout::base_layout, work_card::work_card};
+use crate::components::{
+    base_layout::base_layout,
+    button::{ButtonSize, ButtonVariant, button_variants},
+    work_card::work_card,
+};
 
 const CHEVRON_RIGHT: IconData = iconify::iconify_icon!("lucide:chevron-right");
 
@@ -90,19 +94,19 @@ async fn hero() -> Result<impl View> {
             </dl>
             <div class="mt-6.5 flex flex-wrap gap-2.5 max-sm:mt-5.5 max-sm:gap-2">
                 <a
-                    class="inline-flex h-10 items-center gap-1.5 rounded-btn bg-fg px-4.5 \
-                           text-[14.5px] font-medium tracking-normal whitespace-nowrap text-bg \
-                           transition-opacity duration-150 hover:opacity-88 \
-                           max-sm:flex-auto max-sm:justify-center"
+                    class=(class!(
+                        button_variants(ButtonVariant::Primary, ButtonSize::Large),
+                        "tracking-normal max-sm:flex-auto max-sm:justify-center",
+                    ))
                     href="/works"
                 >
                     "作品を見る"
                 </a>
                 <a
-                    class="inline-flex h-10 items-center gap-1.5 rounded-btn border \
-                           border-border-strong px-4.5 text-[14.5px] font-medium tracking-normal \
-                           whitespace-nowrap text-fg transition-colors duration-150 \
-                           hover:border-muted hover:bg-card max-sm:flex-auto max-sm:justify-center"
+                    class=(class!(
+                        button_variants(ButtonVariant::Ghost, ButtonSize::Large),
+                        "tracking-normal max-sm:flex-auto max-sm:justify-center",
+                    ))
                     href=(href!(about::about))
                 >
                     "経歴を読む"
