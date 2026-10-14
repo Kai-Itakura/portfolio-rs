@@ -7,7 +7,7 @@ use topcoat::{
 use crate::components::base_layout::base_layout;
 
 #[page]
-pub(crate) async fn about() -> Result<impl View> {
+pub async fn about() -> Result<impl View> {
     Ok(view! {
         base_layout(
             title: "About",

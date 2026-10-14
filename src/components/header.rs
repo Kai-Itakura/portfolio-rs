@@ -17,7 +17,7 @@ const GITHUB: IconData = iconify::iconify_icon!("lucide:github");
 const MAIL: IconData = iconify::iconify_icon!("lucide:mail");
 
 #[component]
-pub(crate) async fn header() -> Result<impl View> {
+pub async fn header() -> Result<impl View> {
     Ok(view! {
         <header
             class="group relative z-3 flex h-14 items-center gap-6.5 \

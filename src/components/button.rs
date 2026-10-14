@@ -4,7 +4,7 @@ const BASE_CLASS: &str =
     "inline-flex items-center gap-1.5 rounded-btn font-medium whitespace-nowrap duration-150";
 
 #[derive(Copy, Clone)]
-pub(crate) enum ButtonVariant {
+pub enum ButtonVariant {
     Primary,
     Ghost,
 }
@@ -21,7 +21,7 @@ impl ButtonVariant {
 }
 
 #[derive(Copy, Clone)]
-pub(crate) enum ButtonSize {
+pub enum ButtonSize {
     Small,
     Large,
 }
@@ -35,7 +35,7 @@ impl ButtonSize {
     }
 }
 
-pub(crate) fn button_variants(
+pub fn button_variants(
     variant: ButtonVariant,
     size: ButtonSize,
 ) -> Class<impl ClassEntries> {

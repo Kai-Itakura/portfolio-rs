@@ -7,7 +7,7 @@ use topcoat::{
 const ARROW_UP_RIGHT: IconData = iconify::iconify_icon!("lucide:arrow-up-right");
 
 #[component]
-pub(crate) async fn work_card(
+pub async fn work_card(
     href: &str,
     path: &str,
     title: &str,

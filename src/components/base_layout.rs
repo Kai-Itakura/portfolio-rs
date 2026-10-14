@@ -12,7 +12,7 @@ const FAVICON: Asset = asset!("assets/favicon.png");
 const APPLE_TOUCH_ICON: Asset = asset!("assets/apple-touch-icon.png");
 
 #[component]
-pub(crate) async fn base_layout(
+pub async fn base_layout(
     #[default]
     #[into]
     title: Option<&str>,

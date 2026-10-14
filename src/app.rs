@@ -1,4 +1,4 @@
-pub(crate) mod about;
+pub mod about;
 
 use topcoat::{
     Result,
@@ -24,7 +24,7 @@ pub fn router() -> Router {
 }
 
 #[page]
-pub(crate) async fn home() -> Result<impl View> {
+pub async fn home() -> Result<impl View> {
     Ok(view! {
         base_layout(
             hero()
