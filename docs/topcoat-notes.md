@@ -1,8 +1,8 @@
-# Topcoat 0.9.0 調査メモ
+# Topcoat 0.10.0 調査メモ
 
 実装の前に確かめた事実とハマりどころ。**答えではなく地図**として使う。
 
-調査日: 2026-09-20（0.8.1）、2026-09-28 に 0.9.0 へ更新 / 対象バージョン: topcoat 0.9.0 / topcoat-cli 0.9.0
+調査日: 2026-09-20（0.8.1）、2026-09-28 に 0.9.0 へ、2026-10-17 に 0.10.0 へ更新 / 対象バージョン: topcoat 0.10.0 / topcoat-cli 0.10.0
 
 ## 前提
 
@@ -10,7 +10,7 @@
 - **early-stage / experimental。破壊的変更が入ると明言されている**
 - サーバーレンダリング専用。**WASM は使わない**
 - 常駐 Tokio ランタイムが必要 → デプロイ先はコンテナ or VM
-- **MSRV は 1.98。** 0.7.0 で上がり、0.9.0 でも据え置き。ツールチェインが古いと `cargo add` が
+- **MSRV は 1.98。** 0.7.0 で上がり、0.10.0 でも据え置き。ツールチェインが古いと `cargo add` が
   黙って古いバージョンを選ぶ（Cargo の MSRV 対応リゾルバの挙動）
 
 ## 🟢 一次情報はローカルにある
@@ -18,25 +18,27 @@
 **crate 自体がガイドを同梱している。** docs.rs や GitHub を見に行く前にここを読む。
 
 ```
-~/.cargo/registry/src/*/topcoat-0.9.0/
+~/.cargo/registry/src/*/topcoat-0.10.0/
 ├── CHANGELOG.md          # 破壊的変更はここに [**breaking**] で明示される
 ├── README.md
 ├── docs/                 # 機能ごとのガイド
 │   ├── getting_started.md  router.md  asset.md  tailwind.md
 │   ├── font.md  runtime.md  view.md  context.md  ui.md  session.md
-│   └── cookie.md  icon.md  mail.md  htmx.md  datastar.md ...
+│   ├── cookie.md  icon.md  mail.md  htmx.md  datastar.md  alpine_ajax.md
+│   └── context/          # app_context.md  functions_not_middlewares.md
 └── src/
 ```
 
-ガイドは 0.9.0 で全面的に書き直された（#435 / #439）。0.8.1 のときに読んだ内容を
-覚えていても、該当箇所は読み直すこと。
+ガイドは 0.9.0 で全面的に書き直され（#435 / #439）、0.10.0 でも構成が組み替えられた（#454）。
+古い版で読んだ内容を覚えていても、該当箇所は読み直すこと。
 
 サブクレートも同じ階層に展開されている。挙動の裏取りが要るときはこちら:
 
 ```
-topcoat-router-0.9.0/    topcoat-view-0.9.0/    topcoat-asset-0.9.0/
-topcoat-core-0.9.0/      topcoat-font-0.9.0/    topcoat-icon-0.9.0/
-topcoat-tailwind-0.9.0/  topcoat-ui-registry-0.9.0/
+topcoat-router-0.10.0/   topcoat-view-0.10.0/   topcoat-asset-0.10.0/
+topcoat-core-0.10.0/     topcoat-font-0.10.0/   topcoat-icon-0.10.0/
+topcoat-tailwind-0.10.0/ topcoat-runtime-0.10.0/ topcoat-session-0.10.0/
+topcoat-cookie-0.10.0/   topcoat-mail-0.10.0/   topcoat-ui-0.10.0/
 ```
 
 `-macro` と `-grammar` がペアで存在する。`view!` や `#[page]` の構文定義が
@@ -55,9 +57,9 @@ cargo install topcoat-cli        # dev サーバー / アセットバンドル /
 ### 🔴 CLI とライブラリのバージョンを揃える
 
 `topcoat-cli` はライブラリと同じバージョン番号で公開されている。
-**両方 0.9.0 に揃えること。** ずれると CLI が警告を出す。
+**両方 0.10.0 に揃えること。** ずれると CLI が警告を出す。
 `Cargo.toml` の `[dependencies]` と `[build-dependencies]` の 2 箇所も同じ版にする。
-`0.x` 系の `"0.8.1"` は 0.9 への更新を許可しないので、`cargo update` だけでは上がらない。
+`0.x` 系の `"0.9.0"` は 0.10 への更新を許可しないので、`cargo update` だけでは上がらない。
 バンドラはコンパイル済みバイナリを走査する仕組みなので、走査側と埋め込み側で
 想定が食い違うと壊れる。
 
@@ -79,7 +81,9 @@ topcoat ui remove       # 追加した UI コンポーネントを削除
 
 - `dev` / `asset bundle` は `--bin` / `-p` / `-r` / `--profile` を取る（`cargo build` と同じ）
 - `asset bundle` は `-o, --out <DIR>` で出力先を変えられる
-- `fmt` は `--stdin` と `--macros <名前リスト>` を取る
+- `fmt` は `--stdin` と `--macros <名前リスト>` を取る。0.10.0 で `--check`（整形せず差分の有無だけ見る。CI 向け）と
+  `--rustfmt`（先に rustfmt をかける）が増えた
+- `topcoat --version` でバージョンを確かめられる（0.10.0）
 - ページに `topcoat::dev::script()` があると `dev` がライブリロードする。
   ターミナルで `r` を押すと手動リビルド
 
@@ -109,7 +113,7 @@ SIGTERM / Ctrl+C でグレースフルシャットダウンする。
   3. 手動登録 — `.page(...)` `.layout(...)` などを列挙
 - `#[layout]` はページ（またはネストしたレイアウト）を `Slot` として受け取る
 
-### パスパラメータ — 🔴 0.5.0 から形が変わった
+### パスパラメータ — 🔴 0.5.0 から形が変わった、0.10.0 で `module_param!` が増えた
 
 **`path_param!` は関数形式マクロ**（0.6.0 の breaking change #242）。
 0.5.0 の属性マクロ形式ではない。
@@ -126,8 +130,10 @@ path_param!(post_id: u64, error = bad_request);
 - `error = bad_request` / `not_found` / `unauthorized` / `forbidden` /
   `redirect(...)` / `redirect_permanent(...)` でパース失敗をルータのエラーに写せる
 - `*` を前置すると catch-all（`path_param!(*doc_path)`）
-- `module_router!` では、**非ルートのルートモジュール内に宣言すると
-  そのモジュールのセグメント自体がパラメータになる**
+- `module_router!` では **`module_param!`**（0.10.0 で追加、#460）を使う。
+  `path_param!` と同じ宣言をしたうえで、そのモジュールのセグメント自体をパラメータにする
+- リンクの URL は `href!` で、ハンドラの Rust の名前から組み立てられる。
+  モジュール名を変えても URL が追従する（`docs/router.md`）
 - パースはリクエストごとに 1 回でメモ化される
 
 ### クエリパラメータ
@@ -148,7 +154,7 @@ topcoat::router::request::{parts, method, uri, version, headers, content_type, e
 いずれも `&Cx` を取る関数。
 
 - ミドルウェアではなく**普通の関数**で認証などのリクエストスコープの関心事を
-  表現するのが推奨（`docs/functions_not_middlewares.md`）
+  表現するのが推奨（`docs/context/functions_not_middlewares.md`）
 - `#[memoize]` でリクエストごとのキャッシュ / fan-out の重複排除ができる。
   0.6.0 から `as_ref` を手で指定する形に変わっている
 
@@ -213,7 +219,8 @@ topcoat::router::request::{parts, method, uri, version, headers, content_type, e
 
 ### Geist はカタログにある
 
-`topcoat-font-0.8.1/fonts.json` で確認した（0.9.0 のカタログでは未確認）。
+`topcoat-font-0.8.1/fonts.json` で確認した。0.10.0 のカタログにも `geist` / `geist-mono` があることを
+確かめた（`geist-sans` も増えている）。下の表のウェイトとサブセットは 0.8.1 のときの値。
 
 | id | family | weights | subsets | license |
 | --- | --- | --- | --- | --- |
@@ -238,8 +245,11 @@ topcoat::router::request::{parts, method, uri, version, headers, content_type, e
 - **サーバーがシグナルから読み戻した値はユーザー入力として扱う**（信頼しない）
 - ほかに event handler / bind 属性 / `#[procedure]` / `#[shard]` がある
 - ドキュメント自身が **"highly experimental and fairly limited today"** と書いている
+- 0.10.0 で**クライアント側のナビゲーションとプリフェッチ**が入った（#465）。
+  `link` を使ったリンクだけが対象のオプトインで、普通の `<a>` の挙動は変わらない。
+  このサイトのヘッダーは普通の `<a>` なので、CSS だけのドロワーには影響しない
 
-## feature 一覧（0.9.0）
+## feature 一覧（0.10.0）
 
 ```
 default = asset compression cookie discover font icon router runtime serve session view
@@ -248,12 +258,22 @@ default = asset compression cookie discover font icon router runtime serve sessi
 full    = 全部
 ```
 
-0.9.0 で `anyhow` と `fs` が増えた。`fs` はディレクトリをそのまま配信する
+0.10.0 で増減は無い。0.9.0 で `anyhow` と `fs` が増えた。`fs` はディレクトリをそのまま配信する
 `DirectoryRoute` / `.serve_dir()` / `.public_dir()`（#424）のためのもの。
 
-このプロジェクトで有効にしているのは **`tailwind`** と **`icon-iconify`**。
-今後の候補は、フォントを Fontsource から取るなら **`font-fontsource`**、
-サイトマップを使うなら **`sitemap`**。
+このプロジェクトで有効にしているのは **`tailwind`**・**`icon-iconify`**・**`font-fontsource`**。
+今後の候補は、サイトマップを使うなら **`sitemap`**。
+
+## 0.9.0 → 0.10.0 で変わったこと
+
+CHANGELOG に `[**breaking**]` は無い。このプロジェクトに関係しうる追加:
+
+| 変更 | 関係 |
+| --- | --- |
+| `module_param!`（#460） | `/works/{slug}` を作るときに使う |
+| クライアント側のナビゲーションとプリフェッチ（#465） | オプトインなので、使わなければ影響は無い |
+| `topcoat fmt --check` / `--rustfmt`（#482 / #456） | `--check` は CI で整形漏れを見つけるのに使える |
+| `topcoat dev` が `[package] default-run` を見る（#477）、`live!` のリロード修正（#481） | 開発サーバーの挙動の修正 |
 
 ## 0.8.1 → 0.9.0 で変わったこと
 
@@ -291,7 +311,7 @@ breaking ではないが使えそうな追加:
 ## 参考リンク
 
 - README（各機能のガイドへのリンク集）: https://github.com/tokio-rs/topcoat#learn-topcoat
-- docs.rs（バージョン固定）: https://docs.rs/topcoat/0.9.0
+- docs.rs（バージョン固定）: https://docs.rs/topcoat/0.10.0
 - 公式サンプル: https://github.com/tokio-rs/topcoat/tree/main/examples
 - Discord（tokio）: https://discord.gg/tokio
 

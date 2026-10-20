@@ -83,7 +83,7 @@
 - **[`docs/design.md`](docs/design.md)** — 見た目の仕様（決定事項）。
   トークン（色・フォント・角丸・ブレークポイント）、共通コンポーネント、
   ルート別のレイアウトと SP での差分、画像比率
-- **[`docs/topcoat-notes.md`](docs/topcoat-notes.md)** — Topcoat 0.9.0 の調査メモ。
+- **[`docs/topcoat-notes.md`](docs/topcoat-notes.md)** — Topcoat 0.10.0 の調査メモ。
   CLI、アセットシステム、Tailwind 連携、ルーティング、**ハマりどころ**、未実装機能
 
 **ドキュメントと既存のコードが食い違うときはコードの書き方に従い、見つけた食い違いを最後の返答ですべて挙げること。**
@@ -92,7 +92,7 @@
 
 - **移行元:** `../portfolio` — Astro 5 + Tailwind CSS v4 の静的サイト。
   Cloudflare Workers で稼働中（https://portfolio.itakai199969-e42.workers.dev）
-- **移行先:** [Topcoat](https://github.com/tokio-rs/topcoat) 0.9.0 —
+- **移行先:** [Topcoat](https://github.com/tokio-rs/topcoat) 0.10.0 —
   tokio-rs 製のサーバーレンダリング Rust フルスタックフレームワーク
 - **デプロイ先:** Google Cloud Run
 
@@ -110,7 +110,7 @@ CLI は `cargo install topcoat-cli` で入れる。
 ## 最低限の注意点（詳細は docs/topcoat-notes.md）
 
 - **迷ったら crate 同梱のガイドを読む。**
-  `~/.cargo/registry/src/*/topcoat-0.9.0/docs/` に機能ごとのガイドがある。
+  `~/.cargo/registry/src/*/topcoat-0.10.0/docs/` に機能ごとのガイドがある。
   破壊的変更は crate 直下の `CHANGELOG.md` に `[**breaking**]` で明示される
 - **`topcoat-cli` はライブラリと同じバージョンに揃える。** ずれると警告が出る
 - **`.gitignore` の `/target` を消さない。** Tailwind のクラス走査がこれに依存している
