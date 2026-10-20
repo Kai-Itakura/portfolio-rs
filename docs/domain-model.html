@@ -1,0 +1,311 @@
+<title>Portfolio ドメインモデル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: 型を「ボックス」として並べた設計図。読み取り側 → 計算 → 書き込み側(v2) の順に上から流す */
+:root {
+  --bg: #000000;
+  --card: #0a0a0a;
+  --sunk: #050505;
+  --border: #1f1f1f;
+  --border-strong: #333333;
+  --fg: #ededed;
+  --body: #c6c6c6;
+  --muted: #a1a1a1;
+  --accent: #e8913c;
+  --accent-soft: rgb(232 145 60 / 0.12);
+  --ok: #62c073;
+  --ok-soft: rgb(98 192 115 / 0.12);
+  --open: #8fa3ff;
+  --open-soft: rgb(143 163 255 / 0.12);
+  --font-sans: "Geist", "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-mono: "Geist Mono", "Noto Sans JP", ui-monospace, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #fbfaf8; --card: #ffffff; --sunk: #f3f1ed; --border: #e4e1db; --border-strong: #cfcac1;
+    --fg: #161514; --body: #3a3835; --muted: #6b6760; --accent: #b4600f; --accent-soft: rgb(180 96 15 / 0.10);
+    --ok: #2f7d3e; --ok-soft: rgb(47 125 62 / 0.10); --open: #3a50c9; --open-soft: rgb(58 80 201 / 0.09);
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #fbfaf8; --card: #ffffff; --sunk: #f3f1ed; --border: #e4e1db; --border-strong: #cfcac1;
+  --fg: #161514; --body: #3a3835; --muted: #6b6760; --accent: #b4600f; --accent-soft: rgb(180 96 15 / 0.10);
+  --ok: #2f7d3e; --ok-soft: rgb(47 125 62 / 0.10); --open: #3a50c9; --open-soft: rgb(58 80 201 / 0.09);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--body);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.65;
+  padding-inline: max(16px, 4vw);
+  padding-block: 40px 72px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
+
+header { display: flex; flex-direction: column; gap: 12px; }
+.prompt { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+.prompt b { color: var(--accent); font-weight: 400; }
+h1 { margin: 0; color: var(--fg); font-size: clamp(24px, 3.6vw, 36px); font-weight: 600; letter-spacing: -0.03em; line-height: 1.15; text-wrap: balance; }
+.lede { margin: 0; max-width: 62ch; color: var(--muted); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12.5px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+
+.tag { display: inline-block; font-family: var(--font-mono); font-size: 10.5px; line-height: 1; padding: 4px 6px; border-radius: 4px; letter-spacing: 0.02em; white-space: nowrap; }
+.t-done { color: var(--ok); background: var(--ok-soft); }
+.t-prop { color: var(--accent); background: var(--accent-soft); }
+.t-open { color: var(--open); background: var(--open-soft); }
+.t-calc { color: var(--muted); border: 1px dashed var(--border-strong); }
+
+section { display: flex; flex-direction: column; gap: 18px; }
+.sec-head { display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--border); padding-top: 18px; }
+.sec-head h2 { margin: 0; color: var(--fg); font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+.sec-head p { margin: 0; color: var(--muted); font-size: 13px; max-width: 70ch; }
+
+/* type boxes */
+.type { background: var(--card); border: 1px solid var(--border-strong); border-radius: 10px; overflow: hidden; min-width: 0; }
+.type-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--sunk); }
+.type-name { font-family: var(--font-mono); color: var(--fg); font-size: 15px; font-weight: 500; }
+.kw { color: var(--muted); font-weight: 400; margin-right: 6px; }
+.type-role { font-size: 12px; color: var(--muted); text-align: right; }
+.rows { margin: 0; padding: 4px 0; list-style: none; }
+.rows li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 7px 14px; }
+.rows li + li { border-top: 1px solid var(--border); }
+.sig { font-family: var(--font-mono); font-size: 13px; color: var(--fg); min-width: 0; overflow-wrap: anywhere; }
+.sig .ty { color: var(--muted); }
+.sig .unit { color: var(--muted); font-size: 12px; font-family: var(--font-sans); }
+.note { grid-column: 1 / -1; font-size: 12px; color: var(--muted); margin-top: -2px; }
+.type.is-prop { border-color: var(--accent); }
+.type.is-faded { border-style: dashed; border-color: var(--border-strong); background: transparent; }
+.type.is-faded .type-head { background: transparent; }
+
+/* read side diagram */
+.diagram { display: grid; grid-template-columns: minmax(0, 1.15fr) 140px minmax(0, 1fr); grid-template-areas: "proj link tech" "kind . cat" "period . ."; gap: 16px 0; align-items: start; }
+.a-proj { grid-area: proj; } .a-tech { grid-area: tech; } .a-kind { grid-area: kind; } .a-cat { grid-area: cat; } .a-period { grid-area: period; }
+.a-kind, .a-period { position: relative; margin-left: 28px; }
+.a-cat { position: relative; margin-left: 28px; }
+.a-kind::before, .a-period::before, .a-cat::before {
+  content: ""; position: absolute; left: -16px; top: -16px; height: 38px; width: 12px;
+  border-left: 1px solid var(--border-strong); border-bottom: 1px solid var(--border-strong); border-bottom-left-radius: 6px;
+}
+.link { grid-area: link; align-self: center; display: flex; flex-direction: column; align-items: center; gap: 6px; padding-inline: 8px; text-align: center; }
+.link .line { width: 100%; height: 1px; background: var(--accent); position: relative; }
+.link .line::after { content: ""; position: absolute; right: -1px; top: -4px; border: 4.5px solid transparent; border-left: 7px solid var(--accent); border-right: 0; }
+.link .lbl { font-family: var(--font-mono); font-size: 11.5px; color: var(--accent); }
+.link .sub { font-size: 11.5px; color: var(--muted); line-height: 1.4; }
+
+/* computed */
+.flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; counter-reset: step; }
+.step { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px; background: var(--card); min-width: 0; }
+.step .h { font-family: var(--font-mono); font-size: 12.5px; color: var(--fg); }
+.step p { margin: 0; font-size: 12.5px; color: var(--muted); }
+.step.pure { border-color: var(--accent); }
+.calc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.gauge { display: inline-flex; gap: 3px; vertical-align: middle; }
+.gauge i { width: 10px; height: 10px; border-radius: 2px; background: var(--border-strong); }
+.gauge i.on { background: var(--accent); }
+ol.keys { margin: 0; padding: 4px 14px 10px 32px; font-size: 13px; }
+ol.keys li { padding: 3px 0; }
+ol.keys li::marker { font-family: var(--font-mono); color: var(--muted); }
+
+/* v2 */
+.v2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.compare { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; background: var(--card); }
+.compare th, .compare td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.compare tr:last-child td { border-bottom: 0; }
+.compare th { color: var(--muted); font-weight: 500; font-size: 12px; background: var(--sunk); }
+.compare td:first-child { color: var(--muted); white-space: nowrap; }
+.compare td strong { color: var(--fg); font-weight: 500; }
+
+/* open questions */
+.qs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.qs li { border: 1px solid var(--border); border-left: 2px solid var(--open); border-radius: 8px; padding: 12px 14px; background: var(--card); display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.qs .q { color: var(--fg); font-weight: 500; font-size: 13.5px; }
+.qs .d { color: var(--muted); font-size: 12.5px; }
+code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
+
+@media (max-width: 860px) {
+  .diagram { grid-template-columns: minmax(0, 1fr); grid-template-areas: "proj" "kind" "period" "link" "tech" "cat"; }
+  .link { flex-direction: row; justify-content: flex-start; gap: 10px; padding: 0 0 0 14px; text-align: left; }
+  .link .line { width: 1px; height: 34px; flex: none; }
+  .link .line::after { right: -4px; top: auto; bottom: -1px; border: 4.5px solid transparent; border-top: 7px solid var(--accent); border-bottom: 0; }
+  .link .txt { display: flex; flex-direction: column; gap: 2px; }
+  .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .calc-grid, .v2, .qs { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 460px) {
+  .flow { grid-template-columns: minmax(0, 1fr); }
+  .a-kind, .a-period, .a-cat { margin-left: 20px; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="prompt"><b>$</b> portfolio-rs / src/project.rs · 2026-10-16 時点</div>
+    <h1>Project と技術のドメインモデル</h1>
+    <p class="lede">Stack パネルと Timeline の元データになる型と、そこから表示のときに計算する値の関係。データの正は転職活動用の別アプリで、v1 ではデータをコードに直接書く。</p>
+    <div class="legend">
+      <span><i class="tag t-done">決定</i>決めた・実装済み</span>
+      <span><i class="tag t-prop">提案</i>おすすめを出して、返事待ち</span>
+      <span><i class="tag t-open">未決</i>まだ議論していない</span>
+      <span><i class="tag t-calc">計算</i>保存せず、表示のときに導く</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <h2>読み取り側：案件と技術</h2>
+      <p>このサイトは別アプリのデータを読むだけ。v1 はコードに書いたデータを「一覧を返す関数」の裏に隠し、API ができたら関数の中身だけを差し替える。</p>
+    </div>
+
+    <div class="diagram">
+      <div class="type a-proj">
+        <div class="type-head"><span class="type-name"><span class="kw">struct</span>Project</span><span class="type-role">1 件の案件</span></div>
+        <ul class="rows">
+          <li><span class="sig">id<span class="ty">: ProjectId</span></span><i class="tag t-prop">提案</i><span class="note">別アプリの ID は ULID。API との照合に使う。</span></li>
+          <li><span class="sig">title<span class="ty">: String</span></span><i class="tag t-done">決定</i></li>
+          <li><span class="sig">description<span class="ty">: String</span></span><i class="tag t-done">決定</i></li>
+          <li><span class="sig">kind<span class="ty">: ProjectKind</span></span><i class="tag t-done">決定</i></li>
+          <li><span class="sig">tech_stack<span class="ty">: HashSet&lt;TechnologyId&gt;</span></span><i class="tag t-done">決定</i><span class="note">ID の集合で参照する。同じ技術の重複を型で防ぐ。順序は持たない（並べるのは QueryService の仕事）。<code>TechnologyId</code> に <code>Hash</code> が要る。</span></li>
+          <li><span class="sig">show_in_timeline<span class="ty">: bool</span></span><i class="tag t-prop">未実装</i><span class="note">Timeline に出すかのフラグ。持つことは決定済み。名前は未定。</span></li>
+        </ul>
+      </div>
+
+      <div class="link">
+        <div class="line"></div>
+        <div class="txt">
+          <div class="lbl">ID で参照</div>
+          <div class="sub">多対多 · 別の集約</div>
+        </div>
+      </div>
+
+      <div class="type a-tech is-prop">
+        <div class="type-head"><span class="type-name"><span class="kw">struct</span>Technology</span><span class="type-role">1 つの技術（データ）</span></div>
+        <ul class="rows">
+          <li><span class="sig">id<span class="ty">: TechnologyId</span></span><i class="tag t-prop">提案</i><span class="note">別アプリの ID は ULID（26 文字の文字列、中身は 128 ビット）。newtype で名前や ProjectId と取り違えないようにする案。</span></li>
+          <li><span class="sig">name<span class="ty">: String</span></span><i class="tag t-done">決定</i><span class="note">&amp;'a str ではなく所有する String。</span></li>
+          <li><span class="sig">category<span class="ty">: Category</span></span><i class="tag t-done">決定</i><span class="note">カテゴリは技術の側が持つ。案件には保存しない。</span></li>
+        </ul>
+      </div>
+
+      <div class="type a-kind">
+        <div class="type-head"><span class="type-name"><span class="kw">enum</span>ProjectKind</span><span class="type-role">実務か個人開発か</span></div>
+        <ul class="rows">
+          <li><span class="sig">Professional { period<span class="ty">: Period</span> }</span><i class="tag t-done">決定</i></li>
+          <li><span class="sig">Personal <span class="unit">データなし</span></span><i class="tag t-done">決定</i><span class="note">業務外はすべて個人開発。期間という項目をそもそも持たない。</span></li>
+        </ul>
+      </div>
+
+      <div class="type a-period">
+        <div class="type-head"><span class="type-name"><span class="kw">enum</span>Period</span><span class="type-role">実務の期間</span></div>
+        <ul class="rows">
+          <li><span class="sig">Past { start, end<span class="ty">: NaiveDate</span> }</span><i class="tag t-done">決定</i></li>
+          <li><span class="sig">Ongoing { start<span class="ty">: NaiveDate</span> }</span><i class="tag t-done">決定</i><span class="note">終了日が無い ＝ 継続中。</span></li>
+        </ul>
+      </div>
+
+      <div class="type a-cat">
+        <div class="type-head"><span class="type-name"><span class="kw">enum</span>Category</span><span class="type-role">固定のカテゴリ</span></div>
+        <ul class="rows">
+          <li><span class="sig">言語</span><i class="tag t-done">決定</i></li>
+          <li><span class="sig">ライブラリ・フレームワーク</span><i class="tag t-done">決定</i></li>
+          <li><span class="sig">DB</span><i class="tag t-done">決定</i></li>
+          <li><span class="sig">インフラ・開発ツール</span><i class="tag t-done">決定</i></li>
+          <li><span class="sig">業務ツール</span><i class="tag t-done">決定</i><span class="note">パネルにも出す。バリアントは <code>BusinessTool</code>。v1 のデータは空で、API から届く。</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>表示のときに計算する値</h2>
+      <p>件数もゲージも、案件と技術からいつでも導ける。保存すると元のデータと食い違う余地が生まれ、ゲージは最大値が変わるたびに全行が変わるので、DB には置かない。</p>
+    </div>
+
+    <div class="flow">
+      <div class="step"><span class="h">データの出所</span><p>v1：コードに書いたデータ<br>後：別アプリの API（DB に写しを置く案も）</p></div>
+      <div class="step"><span class="h">QueryService</span><p>読み取り専用。<code>Project</code> 集約を経由せず、表示用のデータを返す。出所の違いと並び順はここで扱う。</p></div>
+      <div class="step pure"><span class="h">純粋な関数</span><p>一覧を受け取り、パネルの行を返す。DB にも画面にも依存しないので <code>#[test]</code> を書きやすい。</p></div>
+      <div class="step"><span class="h">view!</span><p>トップは各カテゴリ上位 4 件、/about は全件。</p></div>
+    </div>
+
+    <div class="calc-grid">
+      <div class="type">
+        <div class="type-head"><span class="type-name">Stack パネルの 1 行</span><i class="tag t-calc">計算</i></div>
+        <ul class="rows">
+          <li><span class="sig">件数</span><span class="sig"><span class="ty">tech_stack に含む案件の数</span></span></li>
+          <li><span class="sig">ゲージ</span><span class="gauge" aria-label="7 マス中 4 マス"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="note">7 マス。最大値はすべての技術の中で最も多く使われた技術の件数（全カテゴリ共通）。</span></li>
+        </ul>
+        <ol class="keys">
+          <li>件数が多い順</li>
+          <li>最後に使った時期が新しい順</li>
+          <li>使い始めた時期が新しい順</li>
+          <li>名前順</li>
+        </ol>
+        <p class="note" style="padding: 0 14px 12px; margin: 0;">2 と 3 では、<code>Personal</code> を最も古い扱いにする。</p>
+      </div>
+
+      <div class="type">
+        <div class="type-head"><span class="type-name">Timeline の 1 項目</span><i class="tag t-calc">計算</i></div>
+        <ul class="rows">
+          <li><span class="sig">対象</span><span class="sig"><span class="ty">show_in_timeline が true の案件</span></span></li>
+          <li><span class="sig">見出し・説明</span><span class="sig"><span class="ty">title / description をそのまま</span></span></li>
+          <li><span class="sig">日付</span><span class="sig"><span class="ty">2023.01 - 2023.06（6ヶ月）</span></span><span class="note">Period から導く。継続中は「2026.07 - 現在」で長さなし。</span></li>
+          <li><span class="sig">個人開発の日付</span><i class="tag t-open">未決</i><span class="note">Personal は期間を持たないが、#0 デジハリ・#1 自己学習・#9 このサイトは Timeline に出す予定。</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>v2：作品と管理画面</h2>
+      <p>作品はこのサイトが書き込むデータ。Cloud Run のファイルシステムは揮発性なので、管理画面を作る時点で DB とオブジェクトストレージが要る（ADR 0001）。</p>
+    </div>
+
+    <div class="v2">
+      <div class="type is-faded">
+        <div class="type-head"><span class="type-name"><span class="kw">aggregate</span>Work</span><span class="type-role">作品（Project とは別の概念）</span></div>
+        <ul class="rows">
+          <li><span class="sig">スラッグが重複しない</span><i class="tag t-open">v2</i></li>
+          <li><span class="sig">並び順が一意</span><i class="tag t-open">v2</i></li>
+          <li><span class="sig">画像はストレージの URL で配信</span><i class="tag t-open">v2</i><span class="note"><code>asset!</code> はコンパイル時のパスしか受け付けないため。</span></li>
+        </ul>
+      </div>
+
+      <div class="table-wrap">
+        <table class="compare">
+          <thead><tr><th></th><th>案件・技術</th><th>作品</th></tr></thead>
+          <tbody>
+            <tr><td>正のデータ</td><td>別アプリ</td><td><strong>このサイト</strong></td></tr>
+            <tr><td>このサイトでは</td><td>読むだけ（写し）</td><td>書く・読む</td></tr>
+            <tr><td>更新する場所</td><td>別アプリ</td><td>管理画面</td></tr>
+            <tr><td>集約の意味</td><td>ID で参照し合う形だけ</td><td>整合性を守る</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <h2>まだ決めていないこと</h2>
+    </div>
+    <ul class="qs">
+      <li><span class="q">このサイトでの <code>Project</code> 集約の役割</span><span class="d">読み取りは QueryService が <code>Project</code> を使わずに行う。このサイトは案件を書き込まないので、集約が守る不変条件の出番が無い。別アプリのモデルを写したもの（学習目的）か、API からの変換先か、を決める。QueryService のデータの出所もこれで決まる。</span></li>
+      <li><span class="q">ID を newtype にするか、中身を何で持つか</span><span class="d">質問 6。ID はすべて ULID と確定。newtype にするか（提案は <code>TechnologyId</code> / <code>ProjectId</code>）と、中身を <code>String</code> で持つか ULID の型で持つかは未決。</span></li>
+      <li><span class="q">個人開発を Timeline にどう並べるか</span><span class="d">期間を持たない #0・#1・#9 に、どの日付を出し、どこに置くか。</span></li>
+      <li><span class="q">知らない技術が API から届いたら</span><span class="d">技術はデータ（開いた集合）なので受け入れられるが、カテゴリ名の揃え方（別アプリでは「フレームワーク」）は連携時に決める。</span></li>
+    </ul>
+  </section>
+</div>

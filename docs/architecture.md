@@ -7,10 +7,10 @@
 
 | | 移行元 | 移行先 |
 | --- | --- | --- |
-| フレームワーク | Astro 5（完全静的出力） | Topcoat 0.9.0（サーバーレンダリング） |
+| フレームワーク | Astro 5（完全静的出力） | Topcoat 0.10.0（サーバーレンダリング） |
 | 言語 | TypeScript / Astro | Rust |
 | スタイル | Tailwind CSS v4（Node 経由） | Tailwind CSS v4（Topcoat 経由・Node 不要） |
-| 作品データ | Content Collections（Markdown） | 未定（下記「作品データ」参照） |
+| 作品データ | Content Collections（Markdown） | 本文は Markdown、メタと画像は Rust の定数（ADR 0001） |
 | 画像 | `astro:assets`（webp + srcset 自動生成） | Topcoat の asset システム（最適化は自前） |
 | フォント | Google Fonts（CDN） | Topcoat の `font-fontsource` で自己ホスト |
 | ホスティング | Cloudflare Workers（静的アセット） | Google Cloud Run（コンテナ） |
@@ -30,6 +30,7 @@ portfolio-rs/
 ├── .dockerignore             # .gitignore を除外しないこと
 ├── .github/workflows/ci.yml
 ├── docs/
+├── app.css                   # Tailwind の入力（@theme のトークン）
 ├── src/
 │   ├── main.rs               # topcoat::start(app::router())
 │   ├── app.rs                # ルートレイアウト + トップページ + router()
@@ -39,8 +40,7 @@ portfolio-rs/
 │   │   └── works/
 │   │       └── slug.rs
 │   ├── components/           # 共通コンポーネント
-│   └── styles/
-│       └── global.css        # 旧 src/styles/global.css をそのまま移植
+│   └── domain/               # 案件・技術などのドメインの型（docs/domain-model.html）
 ├── assets/                   # 旧 src/assets/ の画像
 └── content/                  # 作品データ
 ```
@@ -59,8 +59,9 @@ Astro のファイルベースルーティングとほぼ同じ考え方にな�
 
 `src/app.rs` のレイアウトが全ページを包む（旧 `BaseLayout.astro` に相当）。
 
-動的セグメントは、`works/slug.rs` の中で `#[path_param]` を宣言すると
+動的セグメントは、`works/slug.rs` の中で `module_param!(slug)` を宣言すると
 `slug` モジュール自体が `{slug}` になる。URL に placeholder を書く必要はない。
+`module_param!` は 0.10.0 で入った。明示パスのハンドラでは従来どおり `path_param!` を使う。
 
 ## 移植するコンポーネント
 
@@ -105,12 +106,15 @@ Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的
 - フロントマター: `title` / `order` / `tools[]` / `time` / `url` / `lang` /
   `topImage` / `heroImage` / `mockUpImage` / `image1` / `image2`
 
-**Topcoat には Markdown サポートが無い**（ロードマップ段階）ので、以下のいずれかを選ぶ:
+**Topcoat には Markdown サポートが無い**ので、自分でパースする。
 
-1. Markdown を維持し、`pulldown-cmark` などでパースする（旧データをそのまま使える）
-2. データを Rust の構造体（または TOML / JSON）に持ち替える（型が付く。CMS 的な編集性は落ちる）
+決定は [ADR 0001](adr/0001-works-data-shape.md) のとおり。本文だけ Markdown に残して
+`include_str!` でコンパイル時に埋め込み、画像を含むメタ情報は Rust の定数に置く。
+`asset!` がコンパイル時のリテラルパスしか受け付けないため。
 
-起動時に一度読んでメモリに載せる想定。作品数が少ないのでDBは不要。
+v1 は実行時のファイル I/O も DB も無い。管理画面（v2）を作る時点で、本文と画像を外部ストレージに、
+作品のデータを DB に移す。Cloud Run のファイルシステムは揮発性なので、アップロードしたものは
+コンテナの中には置けない。作品（`Work`）は、このサイトが書き込む唯一のデータになる。
 
 ## 使用技術（Stack パネル）
 
@@ -118,9 +122,16 @@ Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的
 コードで数える。** 最終的には、転職活動用に別で管理しているアプリ（プロジェクト・技術スタック・
 STAR ログ）と連携して出す。v1 の案件データは、その置き換えを見越した形にしておく。
 
+**データの正は別アプリ。** v1 は案件と技術をコードに直接書き、読み取り専用の QueryService の裏に隠す。
+API ができたら QueryService の中身だけを差し替える。
+
+読み取りは `Project` 集約を経由しない。QueryService が表示用のデータを返し、並び順もそこで決める。
+`Project` の `tech_stack` は技術 ID の集合（`HashSet`）で、順序を持たない。
+このサイトでの `Project` 集約の役割は未決。型の設計は [`domain-model.html`](domain-model.html) を見ること。
+
 ### カテゴリ
 
-別システムと同じ 5 カテゴリで持つ。カテゴリは固定。
+別システムと同じ 5 カテゴリで持ち、5 つともパネルに出す。カテゴリは固定。
 
 | カテゴリ | パネル | 今のデータで入るもの |
 | --- | --- | --- |
@@ -128,7 +139,7 @@ STAR ログ）と連携して出す。v1 の案件データは、その置き換
 | ライブラリ・フレームワーク | 表示する | React, Next.js, Tailwind CSS, React Router v7, Topcoat, NestJS, Prisma |
 | DB | 表示する | MySQL, PostgreSQL |
 | インフラ・開発ツール | 表示する | Docker, AWS, GitHub Actions, Kubernetes |
-| 業務ツール | 表示しない | （v1 ではデータにも持たない） |
+| 業務ツール | 表示する | （v1 は空。別アプリの API から届く） |
 
 分類で迷ったものの扱い: HTML / CSS / Sass / SQL / Node.js は言語、Tailwind CSS と Prisma は
 ライブラリ・フレームワーク。別システムに出した指示ではカテゴリ名が「フレームワーク」なので、
@@ -136,15 +147,16 @@ STAR ログ）と連携して出す。v1 の案件データは、その置き換
 
 ### 数える対象（v1）
 
-- **数えるもの**：上の表示する 4 カテゴリに入るもの
-- **数えないもの**：業務ツール（Jira / Slack / Figjam / Backlog / Confluence）、デザインツール、
+- **数えるもの**：上の 5 カテゴリに入るもの
+- **数えないもの**：デザインツール、
   AI ツール、Git クライアントとホスティング、ホスティング・SaaS・EC 基盤、OS。
   加えて、個別に外したもの（Smarty / Python / PowerShell / PHP / Symfony / Twig / Fiber）
 - **表記**：`HTML` / `CSS`、`React Router v7`、`GitHub Actions`。
   AWS のサービス名（CloudFront、Aurora など）は `AWS` にまとめる
-- 元データは職務経歴書の技術欄。業務内容の本文にだけ出てくる技術は、個別に判断して足す（React）か外す（jQuery）
+- v1 のデータは、職務経歴書の技術欄を参考に仮置きしたもの。業務内容の本文にだけ出てくる技術は、個別に判断して足す（React）か外す（jQuery）。
+  経歴書は参考資料にすぎず、年月などの判断基準にはしない
 
-業務ツール以外で外したものや、本文から足し引きしたものを連携後にどう再現するかは、
+外したものや、本文から足し引きしたものを連携後にどう再現するかは、
 システム連携ができた時点で決める。
 
 ### 案件（2026-09-30 時点・10 件）
@@ -179,7 +191,7 @@ STAR ログ）と連携して出す。v1 の案件データは、その置き換
 
 ### 表示
 
-- パネルの中で 4 カテゴリを**縦に 1 列**に積み、各カテゴリの中は**2 列**で並べる。860px 以下ではカテゴリの中も 1 列
+- パネルの中で 5 カテゴリを**縦に 1 列**に積み、各カテゴリの中は**2 列**で並べる。860px 以下ではカテゴリの中も 1 列
 - **トップは各カテゴリ上位 4 件まで**、`/about` は全件。2 列で並べるので、トップは偶数件にして行を埋める。
   トップは見出しの右に「4 / 9」のように全体の何件中何件かを出し、`/about` に続きがあることを示す
 - ゲージは 7 マスで全カテゴリ共通。カテゴリごとに最大値を変えると、DB の 1 件が満タンに見えるため
@@ -192,6 +204,13 @@ STAR ログ）と連携して出す。v1 の案件データは、その置き換
 | ライブラリ・フレームワーク | **React 4 → Next.js 3 → Tailwind CSS 2 → React Router v7 2** → Topcoat 1 → NestJS 1 → Prisma 1 |
 | DB | **MySQL 1 → PostgreSQL 1** |
 | インフラ・開発ツール | **Docker 4 → AWS 4 → GitHub Actions 2 → Kubernetes 1** |
+| 業務ツール | （v1 は空。API と連携してから出る） |
+
+業務ツールは 2026-10-17 にパネルへ出すと決めた。データは別アプリの API から届くので、
+v1 では空のままでよい。空のカテゴリを見出しごと出すか隠すかは、表示を作るときに決める。
+
+ゲージの最大値は、業務ツールが入っても**全カテゴリ共通のまま**にする。Slack のように多くの案件で
+使ったツールが最大値になると、ほかのカテゴリのゲージは短くなるが、それは受け入れる。
 
 ## メタ情報（移行時に失ってはいけないもの）
 
