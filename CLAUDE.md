@@ -86,6 +86,8 @@
 - **[`docs/topcoat-notes.md`](docs/topcoat-notes.md)** — Topcoat 0.9.0 の調査メモ。
   CLI、アセットシステム、Tailwind 連携、ルーティング、**ハマりどころ**、未実装機能
 
+**ドキュメントと既存のコードが食い違うときはコードの書き方に従い、見つけた食い違いを最後の返答ですべて挙げること。**
+
 ## プロジェクトの背景
 
 - **移行元:** `../portfolio` — Astro 5 + Tailwind CSS v4 の静的サイト。
