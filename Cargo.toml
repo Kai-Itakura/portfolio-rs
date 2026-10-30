@@ -11,6 +11,7 @@ topcoat = { version = "0.10.0", features = [
   "tailwind",
   "font-fontsource",
 ] }
+ulid = "3.0.0"
 
 [build-dependencies]
 topcoat = { version = "0.10.0", default-features = false, features = [

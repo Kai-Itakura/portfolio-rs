@@ -1,6 +1,6 @@
 mod app;
 mod components;
-mod project;
+mod domain;
 mod site;
 
 #[tokio::main]
