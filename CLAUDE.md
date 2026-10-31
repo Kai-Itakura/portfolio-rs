@@ -86,6 +86,8 @@
 - **[`docs/topcoat-notes.md`](docs/topcoat-notes.md)** — Topcoat 0.10.0 の調査メモ。
   CLI、アセットシステム、Tailwind 連携、ルーティング、**ハマりどころ**、未実装機能
 
+**コードを書くとき・レビューするときは、[Google の Rust スタイルガイド](https://google.github.io/styleguide/rustguide.html) を確認すること。**
+
 **ドキュメントと既存のコードが食い違うときはコードの書き方に従い、見つけた食い違いを最後の返答ですべて挙げること。**
 
 ## プロジェクトの背景
