@@ -102,7 +102,6 @@ data Technology =
 | `BusinessTool` | 業務ツール |
 
 技術は必ずどれか 1 つのカテゴリに属する。カテゴリは技術の側が持ち、案件は持たない。
-カテゴリの一覧は見直す予定（未決）。
 
 ### 公開する案件（このサイトが持つ）
 
@@ -121,6 +120,8 @@ data Work =
     AND ...
 ```
 
+公開する個人開発からしか作れない。
+
 - 作品は案件とは別の集約で、個人開発を ID で参照する
 - 1 つの個人開発に作品は 1 つだけ。実務の案件は作品を持たない
 - 作品は技術スタックを持たない。参照する個人開発の技術スタックをすべてそのまま見せる
@@ -133,6 +134,10 @@ data Work =
 ```
 data PeriodError =
     EndBeforeStart
+
+data WorkError =
+    NotPersonal
+    OR NotPublished
 ```
 
 ## 型どうしの関係
@@ -162,13 +167,16 @@ PublishedProjects ┄┄┄> Project
 
 ```
 periodFromDates    : NaiveDate -> Option<NaiveDate> -> Result<Period, PeriodError>
+projectIdFrom      : Ulid -> ProjectId
 technologyIdFrom   : Ulid -> TechnologyId
+workFromProject    : Project -> PublishedProjects -> Result<Work, WorkError>
 ```
 
 - `periodFromDates` は、終了日が無ければ `Ongoing`、あれば `Past` を返す。
   終了日が開始日より前なら `EndBeforeStart` で失敗する
+- `workFromProject` は、実務の案件なら `NotPersonal`、公開されていなければ `NotPublished` で失敗する
 - 種類は別システムのデータをそのまま使うので、期間から種類を導く関数は持たない
-- コードでは `Period::from_dates`、`From<Ulid> for TechnologyId`
+- コードでは `Period::from_dates`、`From<Ulid> for ProjectId`、`From<Ulid> for TechnologyId`、`Work::from_project`
 
 ### 表示のための計算（未実装）
 
@@ -196,6 +204,6 @@ timeline   : List<Project> -> PublishedProjects -> List<TimelineItem>
 | 案件 ID と技術 ID を取り違えない | 型（別の単純型） |
 | 案件の種類を期間から取り違えない | 型（`kind` を明示して持つ） |
 | 終了日は開始日より前にならない | 関数（`periodFromDates`）。`Period::Past { .. }` と直接書くと検査を通らない |
-| 作品は個人開発だけを参照する | 未実装。作品を作るときに検査する |
+| 作品は公開する個人開発だけを参照する | 関数（`workFromProject`）。`Work { .. }` と直接書くと検査を通らない |
 | 1 つの個人開発に作品は 1 つだけ | 未実装。作品の一覧全体の規則 |
 | 技術の名前が重複しない | 未決。1 つの `Technology` では検査できない、一覧全体の規則 |

@@ -1,15 +1,5 @@
-use crate::domain::project::period::Period;
-
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ProjectKind {
-    Professional { period: Period },
+    Professional,
     Personal,
-}
-
-impl ProjectKind {
-    pub fn from_period(period: Option<Period>) -> Self {
-        match period {
-            Some(period) => Self::Professional { period },
-            None => Self::Personal,
-        }
-    }
 }
