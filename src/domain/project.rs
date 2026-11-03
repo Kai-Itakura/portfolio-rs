@@ -37,6 +37,7 @@ pub enum DeleteError {
 #[derive(Debug)]
 pub enum AddWorkError {
     NotPersonal,
+    RemovedUpstream,
     AlreadyHasWork,
 }
 
@@ -99,9 +100,13 @@ impl Project {
     }
 
     /// 個人開発に作品を足す。公開していない個人開発にも足せる（公開するまで作品は見えない）。
+    /// 別システムから消えた案件には足せない。
     pub fn add_work(self, work: Work) -> Result<Self, AddWorkError> {
         match self.kind {
             ProjectKind::Professional => Err(AddWorkError::NotPersonal),
+            ProjectKind::Personal { .. } if self.publication == Publication::RemovedUpstream => {
+                Err(AddWorkError::RemovedUpstream)
+            }
             ProjectKind::Personal { work: Some(_) } => Err(AddWorkError::AlreadyHasWork),
             ProjectKind::Personal { work: None } => Ok(Self {
                 kind: ProjectKind::Personal { work: Some(work) },

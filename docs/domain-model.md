@@ -149,6 +149,7 @@ data DeleteError =
 
 data AddWorkError =
     NotPersonal
+    OR RemovedUpstream
     OR AlreadyHasWork
 ```
 
@@ -197,7 +198,8 @@ ensureDeletable    : Project -> Result<(), DeleteError>
 - `publish` は、別システムから消えた案件なら `RemovedUpstream` で失敗する
 - `unpublish` は、公開している案件を非公開にする。消えた案件はそのまま
 - `markRemovedUpstream` は、同期が別システムから消えた案件に使う。公開状態は `RemovedUpstream` になる
-- `addWork` は、実務の案件なら `NotPersonal`、すでに作品があれば `AlreadyHasWork` で失敗する。
+- `addWork` は、実務の案件なら `NotPersonal`、別システムから消えた案件なら `RemovedUpstream`、
+  すでに作品があれば `AlreadyHasWork` で失敗する（この順に検査する）。
   公開していない個人開発にも足せる。作品は、個人開発を公開するまで見えない
 - `ensureDeletable` は、別システムから消えた案件でなければ `NotRemovedUpstream` で失敗する。
   実際に消すのは保存を担う側で、消す前に必ずこれを通す
@@ -236,6 +238,7 @@ timeline   : List<Project> -> List<TimelineItem>
 | 終了日は開始日より前にならない | 関数（`periodFromDates`）。`Period::Past { .. }` と直接書くと検査を通らない |
 | 消せるのは別システムから消えた案件だけ | 関数（`ensureDeletable`）。保存を担う側が消す前に呼ぶ |
 | 作品は個人開発にだけ、1 つまで足せる | 型（`Personal { work: Option<Work> }`）と関数（`addWork`） |
+| 別システムから消えた案件には作品を足せない | 関数（`addWork`） |
 | 技術の名前が重複しない | 未決。1 つの `Technology` では検査できない、一覧全体の規則 |
 
 ## 未決
