@@ -62,23 +62,33 @@ impl Project {
         }
     }
 
-    pub fn publish(&mut self) -> Result<(), PublishError> {
+    pub fn publish(self) -> Result<Self, PublishError> {
         if self.publication == Publication::RemovedUpstream {
             return Err(PublishError::RemovedUpstream);
         }
-        self.publication = Publication::Published;
-        Ok(())
+        Ok(Self {
+            publication: Publication::Published,
+            ..self
+        })
     }
 
-    pub fn unpublish(&mut self) {
-        if self.publication == Publication::Published {
-            self.publication = Publication::Unpublished;
+    pub fn unpublish(self) -> Self {
+        let publication = match self.publication {
+            Publication::Published => Publication::Unpublished,
+            other => other,
+        };
+        Self {
+            publication,
+            ..self
         }
     }
 
     /// 別システムから消えた案件に印を付ける。案件と作品は消さずに残し、公開もしない。
-    pub fn mark_removed_upstream(&mut self) {
-        self.publication = Publication::RemovedUpstream;
+    pub fn mark_removed_upstream(self) -> Self {
+        Self {
+            publication: Publication::RemovedUpstream,
+            ..self
+        }
     }
 
     /// このサイトから消してよいかを確かめる。消してよいのは、別システムから消えた案件だけ。
@@ -89,17 +99,19 @@ impl Project {
         Ok(())
     }
 
-    pub fn add_work(&mut self, work: Work) -> Result<(), AddWorkError> {
-        let ProjectKind::Personal { work: slot } = &mut self.kind else {
+    pub fn add_work(self, work: Work) -> Result<Self, AddWorkError> {
+        let ProjectKind::Personal { work: existing } = &self.kind else {
             return Err(AddWorkError::NotPersonal);
         };
         if self.publication != Publication::Published {
             return Err(AddWorkError::NotPublished);
         }
-        if slot.is_some() {
+        if existing.is_some() {
             return Err(AddWorkError::AlreadyHasWork);
         }
-        *slot = Some(work);
-        Ok(())
+        Ok(Self {
+            kind: ProjectKind::Personal { work: Some(work) },
+            ..self
+        })
     }
 }

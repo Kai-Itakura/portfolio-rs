@@ -202,7 +202,9 @@ ensureDeletable    : Project -> Result<(), DeleteError>
   実務の案件なら `NotPersonal`、公開していなければ `NotPublished`、すでに作品があれば `AlreadyHasWork` で失敗する
 - `ensureDeletable` は、別システムから消えた案件でなければ `NotRemovedUpstream` で失敗する。
   実際に消すのは保存を担う側で、消す前に必ずこれを通す
-- コードでは `Project::publish` などのメソッドで、`&mut self` で書き換える
+- どれも純粋な関数。コードでは `self` を受け取り、新しい `Project` を返すメソッドにする（`&mut self` で書き換えない）。
+  失敗すると渡した値は返らないが、失敗したものは保存し直さないので困らない。
+  `ensureDeletable` は何も変えないので `&self` を受け取る
 
 ### 表示のための計算（未実装）
 
