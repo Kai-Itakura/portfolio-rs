@@ -279,7 +279,7 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
         <ul class="rows">
           <li><span class="sig">Published</span><i class="tag t-done">決定</i><span class="note">年表・使用件数・作品として見える。</span></li>
           <li><span class="sig">Unpublished</span><i class="tag t-done">決定</i></li>
-          <li><span class="sig">RemovedUpstream</span><i class="tag t-done">決定</i><span class="note">別システムから消えた案件。作品ごと残し、最初から無かったものとして二度と公開しない（<code>publish</code> が失敗する）。</span></li>
+          <li><span class="sig">RemovedUpstream</span><i class="tag t-done">決定</i><span class="note">別システムから消えた案件。作品ごと残し、最初から無かったものとして二度と公開しない（<code>publish</code> が失敗する）。このサイトで消せるのはこの状態の案件だけ（<code>ensure_deletable</code> が検査する）。</span></li>
         </ul>
       </div>
 
@@ -304,6 +304,7 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
             <tr><td>このサイトでは</td><td>読むだけ（写し）</td><td>書く・読む</td></tr>
             <tr><td>更新する場所</td><td>別システム（同期で写す）</td><td>管理画面</td></tr>
             <tr><td>別システムから消えたら</td><td colspan="2">消さずに残し、<code>RemovedUpstream</code> にする</td></tr>
+            <tr><td>このサイトで消せるもの</td><td colspan="2"><code>RemovedUpstream</code> の案件だけ。作品も一緒に消える</td></tr>
           </tbody>
         </table>
       </div>

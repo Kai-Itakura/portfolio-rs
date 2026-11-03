@@ -30,6 +30,11 @@ pub enum PublishError {
 }
 
 #[derive(Debug)]
+pub enum DeleteError {
+    NotRemovedUpstream,
+}
+
+#[derive(Debug)]
 pub enum AddWorkError {
     NotPersonal,
     NotPublished,
@@ -74,6 +79,14 @@ impl Project {
     /// 別システムから消えた案件に印を付ける。案件と作品は消さずに残し、公開もしない。
     pub fn mark_removed_upstream(&mut self) {
         self.publication = Publication::RemovedUpstream;
+    }
+
+    /// このサイトから消してよいかを確かめる。消してよいのは、別システムから消えた案件だけ。
+    pub fn ensure_deletable(&self) -> Result<(), DeleteError> {
+        if self.publication != Publication::RemovedUpstream {
+            return Err(DeleteError::NotRemovedUpstream);
+        }
+        Ok(())
     }
 
     pub fn add_work(&mut self, work: Work) -> Result<(), AddWorkError> {

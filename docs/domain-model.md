@@ -36,6 +36,7 @@ Scott Wlaschin『Domain Modeling Made Functional』の書き方に合わせる�
 - 同期は、別システムから届く項目だけを書き換える。公開状態と作品には触れない
 - **同期は案件を消さない。** 別システムから消えた案件は、作品ごと残して「別システムから消えた」印を付ける。
   作品はこのサイトで作った多くのデータを持つので、消すと取り戻せないため
+- このサイトで案件を消せるのは、別システムから消えた案件だけ。消すと作品も一緒に消える
 - v1 は同期も DB も無く、データをコードに直接書く
 
 ## 型
@@ -143,6 +144,9 @@ data PeriodError =
 data PublishError =
     RemovedUpstream
 
+data DeleteError =
+    NotRemovedUpstream
+
 data AddWorkError =
     NotPersonal
     OR NotPublished
@@ -188,6 +192,7 @@ publish            : Project -> Result<Project, PublishError>
 unpublish          : Project -> Project
 markRemovedUpstream: Project -> Project
 addWork            : Work -> Project -> Result<Project, AddWorkError>
+ensureDeletable    : Project -> Result<(), DeleteError>
 ```
 
 - `publish` は、別システムから消えた案件なら `RemovedUpstream` で失敗する
@@ -195,6 +200,8 @@ addWork            : Work -> Project -> Result<Project, AddWorkError>
 - `markRemovedUpstream` は、同期が別システムから消えた案件に使う。公開状態は `RemovedUpstream` になる
 - `addWork` は、作品の作成が公開している個人開発を選ぶところから始まることを守る。
   実務の案件なら `NotPersonal`、公開していなければ `NotPublished`、すでに作品があれば `AlreadyHasWork` で失敗する
+- `ensureDeletable` は、別システムから消えた案件でなければ `NotRemovedUpstream` で失敗する。
+  実際に消すのは保存を担う側で、消す前に必ずこれを通す
 - コードでは `Project::publish` などのメソッドで、`&mut self` で書き換える
 
 ### 表示のための計算（未実装）
@@ -226,6 +233,7 @@ timeline   : List<Project> -> List<TimelineItem>
 | 1 つの個人開発に作品は 1 つまで | 型（`Option<Work>`） |
 | 別システムから消えた案件は公開しない | 型（`Publication` の 1 つの状態）と関数（`publish`） |
 | 終了日は開始日より前にならない | 関数（`periodFromDates`）。`Period::Past { .. }` と直接書くと検査を通らない |
+| 消せるのは別システムから消えた案件だけ | 関数（`ensureDeletable`）。保存を担う側が消す前に呼ぶ |
 | 作品は公開している個人開発にだけ足せる | 関数（`addWork`）。項目を直接書き換えると検査を通らない |
 | 技術の名前が重複しない | 未決。1 つの `Technology` では検査できない、一覧全体の規則 |
 
