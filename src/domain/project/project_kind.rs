@@ -1,5 +1,6 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+use crate::domain::project::work::Work;
+
 pub enum ProjectKind {
     Professional,
-    Personal,
+    Personal { work: Option<Work> },
 }

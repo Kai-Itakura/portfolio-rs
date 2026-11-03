@@ -152,7 +152,7 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
   <header>
     <div class="prompt"><b>$</b> portfolio-rs / src/domain · 2026-11-01 時点</div>
     <h1>Project・技術・作品のドメインモデル</h1>
-    <p class="lede">Stack パネル・Timeline・作品の元データになる型と、そこから表示のときに計算する値の関係。案件と技術の正は転職活動用の別システム、作品と公開する案件の正はこのサイト。v1 ではデータをコードに直接書く。用語は CONTEXT.md を見ること。</p>
+    <p class="lede">Stack パネル・Timeline・作品の元データになる型と、そこから表示のときに計算する値の関係。案件と技術の正は転職活動用の別システム、案件の公開状態と作品の正はこのサイト。v1 ではデータをコードに直接書く。用語は CONTEXT.md を見ること。</p>
     <div class="legend">
       <span><i class="tag t-done">決定</i>決めた・実装済み</span>
       <span><i class="tag t-prop">提案</i>おすすめを出して、返事待ち</span>
@@ -177,6 +177,7 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
           <li><span class="sig">kind<span class="ty">: ProjectKind</span></span><i class="tag t-done">決定</i><span class="note">別システムのデータが明示する。期間から推測しない。</span></li>
           <li><span class="sig">period<span class="ty">: Period</span></span><i class="tag t-done">決定</i><span class="note">実務の案件も個人開発も持つ。</span></li>
           <li><span class="sig">tech_stack<span class="ty">: HashSet&lt;TechnologyId&gt;</span></span><i class="tag t-done">決定</i><span class="note">ID の集合で参照する。同じ技術の重複を型で防ぐ。順序は持たない（並べるのは QueryService の仕事）。<code>TechnologyId</code> に <code>Hash</code> が要る。</span></li>
+          <li><span class="sig">publication<span class="ty">: Publication</span></span><i class="tag t-done">決定</i><span class="note">このサイトが持つ項目。同期は書き換えない。</span></li>
         </ul>
       </div>
 
@@ -201,7 +202,7 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
         <div class="type-head"><span class="type-name"><span class="kw">enum</span>ProjectKind</span><span class="type-role">実務か個人開発か</span></div>
         <ul class="rows">
           <li><span class="sig">Professional <span class="unit">データなし</span></span><i class="tag t-done">決定</i></li>
-          <li><span class="sig">Personal <span class="unit">データなし</span></span><i class="tag t-done">決定</i><span class="note">業務外はすべて個人開発。期間は Project が持つので、種類はデータを持たない判別子になる。</span></li>
+          <li><span class="sig">Personal { work<span class="ty">: Option&lt;Work&gt;</span> }</span><i class="tag t-done">決定</i><span class="note">業務外はすべて個人開発。期間は Project が持ち、個人開発だけが作品を持てる。</span></li>
         </ul>
       </div>
 
@@ -243,7 +244,7 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
       <div class="type">
         <div class="type-head"><span class="type-name">Stack パネルの 1 行</span><i class="tag t-calc">計算</i></div>
         <ul class="rows">
-          <li><span class="sig">件数</span><span class="sig"><span class="ty">tech_stack に含む公開する案件の数</span></span></li>
+          <li><span class="sig">件数</span><span class="sig"><span class="ty">tech_stack に含む、公開している案件の数</span></span></li>
           <li><span class="sig">ゲージ</span><span class="gauge" aria-label="7 マス中 4 マス"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span class="note">7 マス。最大値はすべての技術の中で最も多く使われた技術の件数（全カテゴリ共通）。</span></li>
         </ul>
         <ol class="keys">
@@ -252,13 +253,13 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
           <li>使い始めた時期が新しい順</li>
           <li>名前順</li>
         </ol>
-        <p class="note" style="padding: 0 14px 12px; margin: 0;">数えるのは公開する案件だけで、作品は数えない。個人開発を 2 と 3 で最も古い扱いにする規則は、個人開発が期間を持つようになったので見直す（未決）。</p>
+        <p class="note" style="padding: 0 14px 12px; margin: 0;">数えるのは公開している案件だけで、作品は数えない。個人開発を 2 と 3 で最も古い扱いにする規則は、個人開発が期間を持つようになったので見直す（未決）。</p>
       </div>
 
       <div class="type">
         <div class="type-head"><span class="type-name">Timeline の 1 項目</span><i class="tag t-calc">計算</i></div>
         <ul class="rows">
-          <li><span class="sig">対象</span><span class="sig"><span class="ty">公開する案件（実務・個人開発とも）</span></span></li>
+          <li><span class="sig">対象</span><span class="sig"><span class="ty">公開している案件（実務・個人開発とも）</span></span></li>
           <li><span class="sig">見出し・説明</span><span class="sig"><span class="ty">title / description をそのまま</span></span></li>
           <li><span class="sig">日付</span><span class="sig"><span class="ty">2023.01 - 2023.06（6ヶ月）</span></span><span class="note">Period から導く。継続中は「2026.07 - 現在」で長さなし。</span></li>
         </ul>
@@ -268,24 +269,26 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
 
   <section>
     <div class="sec-head">
-      <h2>このサイトが持つもの：公開する案件と作品</h2>
-      <p>公開する案件と作品は、このサイトが書き込むデータ。Cloud Run のファイルシステムは揮発性なので、管理画面を作る時点で DB とオブジェクトストレージが要る（ADR 0001）。</p>
+      <h2>このサイトが持つもの：公開状態と作品</h2>
+      <p>案件の公開状態と作品は、このサイトが書き込むデータ。どちらも <code>Project</code> 集約の中に持つ。同期は別システムから届く項目だけを書き換え、案件を消さない。Cloud Run のファイルシステムは揮発性なので、管理画面を作る時点で DB とオブジェクトストレージが要る（ADR 0001）。</p>
     </div>
 
     <div class="v2">
       <div class="type">
-        <div class="type-head"><span class="type-name"><span class="kw">set</span>PublishedProjects</span><span class="type-role">公開する案件（名前は仮）</span></div>
+        <div class="type-head"><span class="type-name"><span class="kw">enum</span>Publication</span><span class="type-role">案件の公開状態</span></div>
         <ul class="rows">
-          <li><span class="sig">Set&lt;ProjectId&gt;</span><i class="tag t-done">決定</i><span class="note">このサイトで見せる案件。公開しない案件は Timeline にも Stack パネルにも出ない。案件の側には持たせない。</span></li>
+          <li><span class="sig">Published</span><i class="tag t-done">決定</i><span class="note">年表・使用件数・作品として見える。</span></li>
+          <li><span class="sig">Unpublished</span><i class="tag t-done">決定</i></li>
+          <li><span class="sig">RemovedUpstream</span><i class="tag t-done">決定</i><span class="note">別システムから消えた案件。作品ごと残し、最初から無かったものとして二度と公開しない（<code>publish</code> が失敗する）。</span></li>
         </ul>
       </div>
 
       <div class="type">
-        <div class="type-head"><span class="type-name"><span class="kw">aggregate</span>Work</span><span class="type-role">作品（Project とは別の集約）</span></div>
+        <div class="type-head"><span class="type-name"><span class="kw">entity</span>Work</span><span class="type-role">作品（個人開発の中に持つ）</span></div>
         <ul class="rows">
-          <li><span class="sig">project<span class="ty">: ProjectId</span></span><i class="tag t-done">決定</i><span class="note">個人開発を ID で参照する。作品の作成は、公開する個人開発を選ぶところから始まる（<code>Work::from_project</code> が検査する）。</span></li>
-          <li><span class="sig">個人開発 1 つに作品は 1 つだけ</span><i class="tag t-done">決定</i></li>
-          <li><span class="sig">技術スタックは持たない</span><i class="tag t-done">決定</i><span class="note">参照する個人開発の技術スタックをすべてそのまま見せる。</span></li>
+          <li><span class="sig">Personal { work<span class="ty">: Option&lt;Work&gt;</span> }</span><i class="tag t-done">決定</i><span class="note">実務の案件は作品を持てず、個人開発 1 つに作品は 1 つまで。どちらも型で守る。</span></li>
+          <li><span class="sig">公開している個人開発にだけ足せる</span><i class="tag t-done">決定</i><span class="note"><code>Project::add_work</code> が検査する。</span></li>
+          <li><span class="sig">技術スタックは持たない</span><i class="tag t-done">決定</i><span class="note">持ち主の個人開発の技術スタックをすべてそのまま見せる。</span></li>
           <li><span class="sig">個人開発が非公開なら作品も見せない</span><i class="tag t-done">決定</i></li>
           <li><span class="sig">スラッグが重複しない</span><i class="tag t-open">v2</i></li>
           <li><span class="sig">並び順が一意</span><i class="tag t-open">v2</i></li>
@@ -295,12 +298,12 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
 
       <div class="table-wrap">
         <table class="compare">
-          <thead><tr><th></th><th>案件・技術</th><th>作品・公開する案件</th></tr></thead>
+          <thead><tr><th></th><th>案件・技術の項目</th><th>公開状態・作品</th></tr></thead>
           <tbody>
             <tr><td>正のデータ</td><td>別システム</td><td><strong>このサイト</strong></td></tr>
             <tr><td>このサイトでは</td><td>読むだけ（写し）</td><td>書く・読む</td></tr>
-            <tr><td>更新する場所</td><td>別システム</td><td>管理画面</td></tr>
-            <tr><td>集約の意味</td><td>ID で参照し合う形だけ</td><td>整合性を守る</td></tr>
+            <tr><td>更新する場所</td><td>別システム（同期で写す）</td><td>管理画面</td></tr>
+            <tr><td>別システムから消えたら</td><td colspan="2">消さずに残し、<code>RemovedUpstream</code> にする</td></tr>
           </tbody>
         </table>
       </div>
@@ -312,7 +315,8 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
       <h2>まだ決めていないこと</h2>
     </div>
     <ul class="qs">
-      <li><span class="q">このサイトでの <code>Project</code> 集約の役割</span><span class="d">読み取りは QueryService が <code>Project</code> を使わずに行う。このサイトは案件を書き込まないので、集約が守る不変条件の出番が無い。別システムのモデルを写したもの（学習目的）か、API からの変換先か、を決める。QueryService のデータの出所もこれで決まる。</span></li>
+      <li><span class="q">新しく届いた案件の公開状態</span><span class="d">同期で初めて届いた案件を、公開と非公開のどちらで始めるか。</span></li>
+      <li><span class="q">消えた案件がまた届いたとき</span><span class="d"><code>RemovedUpstream</code> の案件が、別システムにまた現れたときの扱い。</span></li>
       <li><span class="q">ID を newtype にするか、中身を何で持つか</span><span class="d">質問 6。ID はすべて ULID と確定。newtype にするか（提案は <code>TechnologyId</code> / <code>ProjectId</code>）と、中身を <code>String</code> で持つか ULID の型で持つかは未決。</span></li>
       <li><span class="q">作品の残りの項目</span><span class="d">本文・画像・スラッグ・並び順など。ADR 0001 の置き場の決定は v1 のまま。</span></li>
       <li><span class="q">同期の仕組み</span><span class="d">別システムのイベントをきっかけにすることは決定。具体的な仕組みは未定。</span></li>
