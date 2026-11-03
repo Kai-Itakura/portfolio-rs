@@ -37,7 +37,6 @@ pub enum DeleteError {
 #[derive(Debug)]
 pub enum AddWorkError {
     NotPersonal,
-    NotPublished,
     AlreadyHasWork,
 }
 
@@ -99,19 +98,15 @@ impl Project {
         Ok(())
     }
 
+    /// 個人開発に作品を足す。公開していない個人開発にも足せる（公開するまで作品は見えない）。
     pub fn add_work(self, work: Work) -> Result<Self, AddWorkError> {
-        let ProjectKind::Personal { work: existing } = &self.kind else {
-            return Err(AddWorkError::NotPersonal);
-        };
-        if self.publication != Publication::Published {
-            return Err(AddWorkError::NotPublished);
+        match self.kind {
+            ProjectKind::Professional => Err(AddWorkError::NotPersonal),
+            ProjectKind::Personal { work: Some(_) } => Err(AddWorkError::AlreadyHasWork),
+            ProjectKind::Personal { work: None } => Ok(Self {
+                kind: ProjectKind::Personal { work: Some(work) },
+                ..self
+            }),
         }
-        if existing.is_some() {
-            return Err(AddWorkError::AlreadyHasWork);
-        }
-        Ok(Self {
-            kind: ProjectKind::Personal { work: Some(work) },
-            ..self
-        })
     }
 }
