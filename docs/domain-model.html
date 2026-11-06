@@ -169,11 +169,12 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
 
     <div class="diagram">
       <div class="type a-proj">
-        <div class="type-head"><span class="type-name"><span class="kw">struct</span>ProjectDetails</span><span class="type-role">種類によらず持つ項目</span></div>
+        <div class="type-head"><span class="type-name"><span class="kw">struct</span>Project</span><span class="type-role">1 件の案件</span></div>
         <ul class="rows">
           <li><span class="sig">id<span class="ty">: ProjectId</span></span><i class="tag t-prop">提案</i><span class="note">別システムの ID は ULID。API との照合に使う。</span></li>
           <li><span class="sig">title<span class="ty">: String</span></span><i class="tag t-done">決定</i></li>
           <li><span class="sig">description<span class="ty">: String</span></span><i class="tag t-done">決定</i></li>
+          <li><span class="sig">kind<span class="ty">: ProjectKind</span></span><i class="tag t-done">決定</i><span class="note">別システムのデータが明示する。期間から推測しない。</span></li>
           <li><span class="sig">period<span class="ty">: Period</span></span><i class="tag t-done">決定</i><span class="note">実務の案件も個人開発も持つ。</span></li>
           <li><span class="sig">tech_stack<span class="ty">: HashSet&lt;TechnologyId&gt;</span></span><i class="tag t-done">決定</i><span class="note">ID の集合で参照する。同じ技術の重複を型で防ぐ。順序は持たない（並べるのは QueryService の仕事）。<code>TechnologyId</code> に <code>Hash</code> が要る。</span></li>
           <li><span class="sig">publication<span class="ty">: Publication</span></span><i class="tag t-done">決定</i><span class="note">このサイトが持つ項目。同期は書き換えない。</span></li>
@@ -198,10 +199,10 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
       </div>
 
       <div class="type a-kind">
-        <div class="type-head"><span class="type-name"><span class="kw">enum</span>Project</span><span class="type-role">1 件の案件（実務か個人開発か）</span></div>
+        <div class="type-head"><span class="type-name"><span class="kw">enum</span>ProjectKind</span><span class="type-role">実務か個人開発か</span></div>
         <ul class="rows">
-          <li><span class="sig">Professional(ProfessionalProject { details })</span><i class="tag t-done">決定</i><span class="note">作品を持たない。</span></li>
-          <li><span class="sig">Personal(PersonalProject { details, work<span class="ty">: Option&lt;Work&gt;</span> })</span><i class="tag t-done">決定</i><span class="note">業務外はすべて個人開発。作品は 1 つまで。どちらかは別システムのデータが明示し、期間から推測しない。</span></li>
+          <li><span class="sig">Professional <span class="unit">データなし</span></span><i class="tag t-done">決定</i></li>
+          <li><span class="sig">Personal { work<span class="ty">: Option&lt;Work&gt;</span> }</span><i class="tag t-done">決定</i><span class="note">業務外はすべて個人開発。期間は Project が持ち、個人開発だけが作品を持てる。</span></li>
         </ul>
       </div>
 
@@ -285,8 +286,8 @@ code { font-family: var(--font-mono); font-size: 0.92em; color: var(--fg); }
       <div class="type">
         <div class="type-head"><span class="type-name"><span class="kw">entity</span>Work</span><span class="type-role">作品（個人開発の中に持つ）</span></div>
         <ul class="rows">
-          <li><span class="sig">PersonalProject.work<span class="ty">: Option&lt;Work&gt;</span></span><i class="tag t-done">決定</i><span class="note">実務の案件は作品を持てず、個人開発 1 つに作品は 1 つまで。どちらも型で守る。</span></li>
-          <li><span class="sig">公開していない個人開発にも足せる</span><i class="tag t-done">決定</i><span class="note">作品は、個人開発を公開するまで見えない。別システムから消えた案件には足せない。<code>PersonalProject::add_work</code> が検査する。</span></li>
+          <li><span class="sig">Personal { work<span class="ty">: Option&lt;Work&gt;</span> }</span><i class="tag t-done">決定</i><span class="note">実務の案件は作品を持てず、個人開発 1 つに作品は 1 つまで。どちらも型で守る。</span></li>
+          <li><span class="sig">公開していない個人開発にも足せる</span><i class="tag t-done">決定</i><span class="note">作品は、個人開発を公開するまで見えない。別システムから消えた案件には足せない。<code>Project::add_work</code> が検査する。</span></li>
           <li><span class="sig">技術スタックは持たない</span><i class="tag t-done">決定</i><span class="note">持ち主の個人開発の技術スタックをすべてそのまま見せる。</span></li>
           <li><span class="sig">個人開発が非公開なら作品も見せない</span><i class="tag t-done">決定</i></li>
           <li><span class="sig">スラッグが重複しない</span><i class="tag t-open">v2</i></li>

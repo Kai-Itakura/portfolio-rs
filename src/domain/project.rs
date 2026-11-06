@@ -1,71 +1,117 @@
 pub mod period;
-pub mod personal_project;
-pub mod professional_project;
-pub mod project_details;
 pub mod project_id;
+pub mod project_kind;
 pub mod publication;
 pub mod work;
 
-use personal_project::PersonalProject;
-use professional_project::ProfessionalProject;
-use project_details::{DeleteError, ProjectDetails, PublishError};
+use std::collections::HashSet;
 
-/// 1 件の案件。実務の案件か個人開発のどちらか。
-pub enum Project {
-    Professional(ProfessionalProject),
-    Personal(PersonalProject),
+use period::Period;
+use project_id::ProjectId;
+use project_kind::ProjectKind;
+use publication::Publication;
+use work::Work;
+
+use crate::domain::technology::technology_id::TechnologyId;
+
+pub struct Project {
+    pub id: ProjectId,
+    pub title: String,
+    pub description: String,
+    pub kind: ProjectKind,
+    pub period: Period,
+    pub tech_stack: HashSet<TechnologyId>,
+    pub publication: Publication,
+}
+
+#[derive(Debug)]
+pub enum PublishError {
+    RemovedUpstream,
+}
+
+#[derive(Debug)]
+pub enum DeleteError {
+    NotRemovedUpstream,
+}
+
+#[derive(Debug)]
+pub enum AddWorkError {
+    NotPersonal,
+    RemovedUpstream,
+    AlreadyHasWork,
 }
 
 impl Project {
-    pub fn details(&self) -> &ProjectDetails {
-        match self {
-            Self::Professional(project) => &project.details,
-            Self::Personal(project) => &project.details,
+    pub fn new(
+        id: ProjectId,
+        title: String,
+        description: String,
+        kind: ProjectKind,
+        period: Period,
+        tech_stack: HashSet<TechnologyId>,
+        publication: Publication,
+    ) -> Self {
+        Self {
+            id,
+            title,
+            description,
+            kind,
+            period,
+            tech_stack,
+            publication,
         }
     }
 
     pub fn publish(self) -> Result<Self, PublishError> {
-        self.try_map_details(ProjectDetails::publish)
+        if self.publication == Publication::RemovedUpstream {
+            return Err(PublishError::RemovedUpstream);
+        }
+        Ok(Self {
+            publication: Publication::Published,
+            ..self
+        })
     }
 
     pub fn unpublish(self) -> Self {
-        self.map_details(ProjectDetails::unpublish)
-    }
-
-    pub fn mark_removed_upstream(self) -> Self {
-        self.map_details(ProjectDetails::mark_removed_upstream)
-    }
-
-    pub fn ensure_deletable(&self) -> Result<(), DeleteError> {
-        self.details().ensure_deletable()
-    }
-
-    /// 中の `ProjectDetails` に `f` を当て、同じ種類の案件に包み直す。
-    fn map_details(self, f: impl FnOnce(ProjectDetails) -> ProjectDetails) -> Self {
-        match self {
-            Self::Professional(project) => Self::Professional(ProfessionalProject {
-                details: f(project.details),
-            }),
-            Self::Personal(project) => Self::Personal(PersonalProject {
-                details: f(project.details),
-                ..project
-            }),
+        let publication = match self.publication {
+            Publication::Published => Publication::Unpublished,
+            other => other,
+        };
+        Self {
+            publication,
+            ..self
         }
     }
 
-    /// `map_details` の、失敗しうる `f` を受け取る版。
-    fn try_map_details<E>(
-        self,
-        f: impl FnOnce(ProjectDetails) -> Result<ProjectDetails, E>,
-    ) -> Result<Self, E> {
-        Ok(match self {
-            Self::Professional(project) => Self::Professional(ProfessionalProject {
-                details: f(project.details)?,
+    /// 別システムから消えた案件に印を付ける。案件と作品は消さずに残し、公開もしない。
+    pub fn mark_removed_upstream(self) -> Self {
+        Self {
+            publication: Publication::RemovedUpstream,
+            ..self
+        }
+    }
+
+    /// このサイトから消してよいかを確かめる。消してよいのは、別システムから消えた案件だけ。
+    pub fn ensure_deletable(&self) -> Result<(), DeleteError> {
+        if self.publication != Publication::RemovedUpstream {
+            return Err(DeleteError::NotRemovedUpstream);
+        }
+        Ok(())
+    }
+
+    /// 個人開発に作品を足す。公開していない個人開発にも足せる（公開するまで作品は見えない）。
+    /// 別システムから消えた案件には足せない。
+    pub fn add_work(self, work: Work) -> Result<Self, AddWorkError> {
+        match self.kind {
+            ProjectKind::Professional => Err(AddWorkError::NotPersonal),
+            ProjectKind::Personal { .. } if self.publication == Publication::RemovedUpstream => {
+                Err(AddWorkError::RemovedUpstream)
+            }
+            ProjectKind::Personal { work: Some(_) } => Err(AddWorkError::AlreadyHasWork),
+            ProjectKind::Personal { work: None } => Ok(Self {
+                kind: ProjectKind::Personal { work: Some(work) },
+                ..self
             }),
-            Self::Personal(project) => Self::Personal(PersonalProject {
-                details: f(project.details)?,
-                ..project
-            }),
-        })
+        }
     }
 }

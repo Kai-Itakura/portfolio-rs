@@ -21,7 +21,7 @@ Scott Wlaschin『Domain Modeling Made Functional』の書き方に合わせる�
 
 ## データの持ち主
 
-`Project`（実務の案件か個人開発のどちらか）は、別システムから届く項目と、このサイトが決める項目を合わせ持つ集約。
+`Project` は、別システムから届く項目と、このサイトが決める項目を合わせ持つ集約。
 
 | 項目 | 持ち主 | このサイトでは |
 | --- | --- | --- |
@@ -64,14 +64,20 @@ data Period =
 - 終了日の無い `Past` と、終了日のある `Ongoing` は書けない
 - 実務の案件も個人開発も期間を持つ。どちらも開始日は必ずあり、終了日は無いこともある
 
-### 作品
+### 案件の種類と作品
 
 ```
+data ProjectKind =
+    Professional
+    OR Personal
+        work: Option<Work>
+
 data Work =
     ...
 ```
 
-- 作品は個人開発の中に持つ（下の `PersonalProject`）
+- 期間の形は種類によらず同じなので、**期間から種類を推測しない**。種類は別システムのデータが明示する
+- 作品は個人開発の中に持つ。実務の案件は作品を持てず、1 つの個人開発に作品は 1 つまで。どちらも型で守る
 - 作品は技術スタックを持たない。持ち主の個人開発の技術スタックをすべてそのまま見せる
 - 作品の本文・画像・スラッグ・並び順などの項目は未設計
 
@@ -92,29 +98,15 @@ data Publication =
 
 ```
 data Project =
-    Professional of ProfessionalProject
-    OR Personal of PersonalProject
-
-data ProfessionalProject =
-    details: ProjectDetails
-
-data PersonalProject =
-    details: ProjectDetails
-    AND work: Option<Work>
-
-data ProjectDetails =
     id: ProjectId
     AND title: String
     AND description: String
+    AND kind: ProjectKind
     AND period: Period
     AND techStack: Set<TechnologyId>
     AND publication: Publication
 ```
 
-- `Project` は、実務の案件か個人開発のどちらか 1 つ（直和型）。どちらかは別システムのデータが明示する。
-  期間の形は種類によらず同じなので、**期間から種類を推測しない**
-- 種類によらず持つ項目は `ProjectDetails` にまとめ、どちらの型もそれを中に持つ
-- 作品を持てるのは `PersonalProject` だけで、1 つまで（`Option<Work>`）。どちらも型で守る
 - `techStack` は技術そのものではなく、ID の集合で参照する。同じ技術は 2 回入らず、順序は持たない
 
 ### 技術とカテゴリ
@@ -156,22 +148,20 @@ data DeleteError =
     NotRemovedUpstream
 
 data AddWorkError =
-    RemovedUpstream
+    NotPersonal
+    OR RemovedUpstream
     OR AlreadyHasWork
 ```
 
 ## 型どうしの関係
 
 ```
-Project ──┬── ProfessionalProject ── ProjectDetails
-          └── PersonalProject ─────┬── ProjectDetails
-                                   └── Work（1 つまで）
-
-ProjectDetails ──┬── ProjectId
-                 ├── Period
-                 ├── Publication
-                 └── Set<TechnologyId> ┄┄┄> Technology ──┬── TechnologyId
-                                                         └── Category
+Project ──┬── ProjectId
+          ├── ProjectKind ── Work（個人開発のみ）
+          ├── Period
+          ├── Publication
+          └── Set<TechnologyId> ┄┄┄> Technology ──┬── TechnologyId
+                                                  └── Category
 ```
 
 - 実線（`──`）は値として中に持つ
@@ -198,26 +188,22 @@ technologyIdFrom   : Ulid -> TechnologyId
 ### 案件の状態を変える（このサイトが持つ項目だけ）
 
 ```
-publish            : ProjectDetails -> Result<ProjectDetails, PublishError>
-unpublish          : ProjectDetails -> ProjectDetails
-markRemovedUpstream: ProjectDetails -> ProjectDetails
-ensureDeletable    : ProjectDetails -> Result<(), DeleteError>
-addWork            : Work -> PersonalProject -> Result<PersonalProject, AddWorkError>
+publish            : Project -> Result<Project, PublishError>
+unpublish          : Project -> Project
+markRemovedUpstream: Project -> Project
+addWork            : Work -> Project -> Result<Project, AddWorkError>
+ensureDeletable    : Project -> Result<(), DeleteError>
 ```
-
-- 公開状態の関数は種類によらないので `ProjectDetails` に書く。`Project` にも同じ名前の関数があり、
-  中の `ProjectDetails` に渡して、同じ種類の `Project` に包み直して返す
-- `addWork` は `PersonalProject` だけが受け取る。実務の案件に作品を足す呼び出しは、型の上で書けない
 
 - `publish` は、別システムから消えた案件なら `RemovedUpstream` で失敗する
 - `unpublish` は、公開している案件を非公開にする。消えた案件はそのまま
 - `markRemovedUpstream` は、同期が別システムから消えた案件に使う。公開状態は `RemovedUpstream` になる
-- `addWork` は、別システムから消えた案件なら `RemovedUpstream`、
+- `addWork` は、実務の案件なら `NotPersonal`、別システムから消えた案件なら `RemovedUpstream`、
   すでに作品があれば `AlreadyHasWork` で失敗する（この順に検査する）。
   公開していない個人開発にも足せる。作品は、個人開発を公開するまで見えない
 - `ensureDeletable` は、別システムから消えた案件でなければ `NotRemovedUpstream` で失敗する。
   実際に消すのは保存を担う側で、消す前に必ずこれを通す
-- どれも純粋な関数。コードでは `self` を受け取り、新しい値を返すメソッドにする（`&mut self` で書き換えない）。
+- どれも純粋な関数。コードでは `self` を受け取り、新しい `Project` を返すメソッドにする（`&mut self` で書き換えない）。
   失敗すると渡した値は返らないが、失敗したものは保存し直さないので困らない。
   `ensureDeletable` は何も変えないので `&self` を受け取る
 
@@ -245,12 +231,13 @@ timeline   : List<Project> -> List<TimelineItem>
 | 継続中の期間は終了日を持たない | 型（`Ongoing` に `end` が無い） |
 | 1 つの案件に同じ技術は 2 回入らない | 型（`Set`） |
 | 案件 ID と技術 ID を取り違えない | 型（別の単純型） |
-| 案件の種類を期間から取り違えない | 型（`Project` の直和型で明示する） |
-| 実務の案件は作品を持たない | 型（`ProfessionalProject` に `work` が無く、`addWork` は `PersonalProject` だけが受け取る） |
+| 案件の種類を期間から取り違えない | 型（`kind` を明示して持つ） |
+| 実務の案件は作品を持たない | 型（`Professional` にデータが無い） |
 | 1 つの個人開発に作品は 1 つまで | 型（`Option<Work>`） |
 | 別システムから消えた案件は公開しない | 型（`Publication` の 1 つの状態）と関数（`publish`） |
 | 終了日は開始日より前にならない | 関数（`periodFromDates`）。`Period::Past { .. }` と直接書くと検査を通らない |
 | 消せるのは別システムから消えた案件だけ | 関数（`ensureDeletable`）。保存を担う側が消す前に呼ぶ |
+| 作品は個人開発にだけ、1 つまで足せる | 型（`Personal { work: Option<Work> }`）と関数（`addWork`） |
 | 別システムから消えた案件には作品を足せない | 関数（`addWork`） |
 | 技術の名前が重複しない | 未決。1 つの `Technology` では検査できない、一覧全体の規則 |
 
