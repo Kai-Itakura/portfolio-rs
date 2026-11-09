@@ -82,7 +82,7 @@ Topcoat の `$(...)` 式も Islands も使わない。
 | `Posts.astro` | 共通コンポーネントのカード |
 | `Hobby.astro` / `HobbyList.astro` | カードを使い回す |
 | `Skills.astro` / `Bar.astro` | `/about` の年表 + 使用件数 |
-| `WorksHeader.astro` / `WorksBody.astro` / `WorksImage.astro` | `/works/{slug}` の帯画像・本文 + メタ・スクショ 2 枚 |
+| `WorksHeader.astro` / `WorksBody.astro` / `WorksImage.astro` | `/works/{slug}` の帯画像・本文 + メタ・モックアップ |
 | `Pagination.astro` | `/works/{slug}` の前後ナビ |
 | `Button.astro` | 共通コンポーネントのボタン（ソリッド / ゴースト） |
 | `DefinitionList.astro` | `/works/{slug}` の `.metadl` |
