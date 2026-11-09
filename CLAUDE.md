@@ -50,9 +50,7 @@
   CLI、アセットシステム、Tailwind 連携、ルーティング、**ハマりどころ**、未実装機能
 - **[`CONTEXT.md`](CONTEXT.md)** — ドメインの用語集。案件・技術・作品などの言葉の定義
 - **[`docs/domain-model.md`](docs/domain-model.md)** — ドメインモデル（決定事項）。
-  型と関数、データの持ち主、不変条件のありか
-- **[`docs/domain-model.html`](docs/domain-model.html)** — ドメインモデルの型の関係を図にしたもの。
-  未決事項の一覧もここにある
+  型と関数、型どうしの関係、データの持ち主、不変条件のありか、未決事項
 - **[`docs/adr/`](docs/adr/)** — 設計判断の記録（ADR）
 
 **ドメインのコードは『Domain Modeling Made Functional』（Scott Wlaschin）の考え方に従う。**

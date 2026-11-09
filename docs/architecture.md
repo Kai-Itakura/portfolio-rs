@@ -40,7 +40,7 @@ portfolio-rs/
 │   │   └── works/
 │   │       └── slug.rs
 │   ├── components/           # 共通コンポーネント
-│   └── domain/               # 案件・技術などのドメインの型（docs/domain-model.html）
+│   └── domain/               # 案件・技術などのドメインの型（docs/domain-model.md）
 ├── assets/                   # 旧 src/assets/ の画像
 └── content/                  # 作品データ
 ```
@@ -138,7 +138,8 @@ v1 は案件と技術をコードに直接書き、読み取り専用の QuerySe
 
 読み取りは `Project` 集約を経由しない。QueryService が表示用のデータを返し、並び順もそこで決める。
 `Project` の `tech_stack` は技術 ID の集合（`HashSet`）で、順序を持たない。
-このサイトでの `Project` 集約の役割は未決。型の設計は [`domain-model.html`](domain-model.html) を見ること。
+`Project` 集約は、別システムから届く項目と、このサイトが決める公開状態・作品を合わせ持つ。
+型の設計は [`domain-model.md`](domain-model.md) を見ること。
 
 ### カテゴリ
 
