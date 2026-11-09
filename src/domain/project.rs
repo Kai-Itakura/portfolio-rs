@@ -8,20 +8,27 @@ use std::collections::HashSet;
 
 use period::Period;
 use project_id::ProjectId;
-use project_kind::ProjectKind;
+use project_kind::{Personal, Professional, ProjectKind};
 use publication::Publication;
 use work::Work;
 
 use crate::domain::technology::technology_id::TechnologyId;
 
-pub struct Project {
+/// 1 件の案件。種類 `K` は `Professional` か `Personal` のどちらか。
+pub struct Project<K: ProjectKind> {
     pub id: ProjectId,
     pub title: String,
     pub description: String,
-    pub kind: ProjectKind,
     pub period: Period,
     pub tech_stack: HashSet<TechnologyId>,
     pub publication: Publication,
+    pub kind: K,
+}
+
+/// 種類がまだ分からない案件。保存先から読んだ案件や、種類の混ざった一覧に使う。
+pub enum AnyProject {
+    Professional(Project<Professional>),
+    Personal(Project<Personal>),
 }
 
 #[derive(Debug)]
@@ -36,29 +43,28 @@ pub enum DeleteError {
 
 #[derive(Debug)]
 pub enum AddWorkError {
-    NotPersonal,
     RemovedUpstream,
     AlreadyHasWork,
 }
 
-impl Project {
+impl<K: ProjectKind> Project<K> {
     pub fn new(
         id: ProjectId,
         title: String,
         description: String,
-        kind: ProjectKind,
         period: Period,
         tech_stack: HashSet<TechnologyId>,
         publication: Publication,
+        kind: K,
     ) -> Self {
         Self {
             id,
             title,
             description,
-            kind,
             period,
             tech_stack,
             publication,
+            kind,
         }
     }
 
@@ -98,20 +104,21 @@ impl Project {
         }
         Ok(())
     }
+}
 
-    /// 個人開発に作品を足す。公開していない個人開発にも足せる（公開するまで作品は見えない）。
-    /// 別システムから消えた案件には足せない。
+impl Project<Personal> {
+    /// 作品を足す。公開していない個人開発にも足せる（公開するまで作品は見えない）。
+    /// 別システムから消えた案件には足せない。実務の案件にはこのメソッドが無い。
     pub fn add_work(self, work: Work) -> Result<Self, AddWorkError> {
-        match self.kind {
-            ProjectKind::Professional => Err(AddWorkError::NotPersonal),
-            ProjectKind::Personal { .. } if self.publication == Publication::RemovedUpstream => {
-                Err(AddWorkError::RemovedUpstream)
-            }
-            ProjectKind::Personal { work: Some(_) } => Err(AddWorkError::AlreadyHasWork),
-            ProjectKind::Personal { work: None } => Ok(Self {
-                kind: ProjectKind::Personal { work: Some(work) },
-                ..self
-            }),
+        if self.publication == Publication::RemovedUpstream {
+            return Err(AddWorkError::RemovedUpstream);
         }
+        if self.kind.work.is_some() {
+            return Err(AddWorkError::AlreadyHasWork);
+        }
+        Ok(Self {
+            kind: Personal { work: Some(work) },
+            ..self
+        })
     }
 }
