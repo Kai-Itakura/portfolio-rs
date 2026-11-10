@@ -3,6 +3,7 @@ pub mod project_id;
 pub mod project_kind;
 pub mod publication;
 pub mod work;
+pub mod work_id;
 
 use std::collections::HashSet;
 

@@ -57,6 +57,8 @@ Astro のファイルベースルーティングとほぼ同じ考え方にな�
 | `/works` | `src/app/works.rs` | `src/pages/works/index.astro` |
 | `/works/{slug}` | `src/app/works/slug.rs` | `src/pages/works/[slug].astro` |
 
+`/works/{slug}` の `slug` は作品の ID（`WorkId`）。旧サイトの `/works/sugutabe` のような名前の URL は引き継がない。
+
 `src/app.rs` のレイアウトが全ページを包む（旧 `BaseLayout.astro` に相当）。
 
 動的セグメントは、`works/slug.rs` の中で `module_param!(slug)` を宣言すると
@@ -82,7 +84,7 @@ Topcoat の `$(...)` 式も Islands も使わない。
 | `Posts.astro` | 共通コンポーネントのカード |
 | `Hobby.astro` / `HobbyList.astro` | カードを使い回す |
 | `Skills.astro` / `Bar.astro` | `/about` の年表 + 使用件数 |
-| `WorksHeader.astro` / `WorksBody.astro` / `WorksImage.astro` | `/works/{slug}` の帯画像・本文 + メタ・モックアップ |
+| `WorksHeader.astro` / `WorksBody.astro` / `WorksImage.astro` | `/works/{slug}` の本文 + メタ・モックアップ |
 | `Pagination.astro` | `/works/{slug}` の前後ナビ |
 | `Button.astro` | 共通コンポーネントのボタン（ソリッド / ゴースト） |
 | `DefinitionList.astro` | `/works/{slug}` の `.metadl` |
@@ -90,7 +92,7 @@ Topcoat の `$(...)` 式も Islands も使わない。
 
 ### 前後の作品ナビゲーションの仕様
 
-`order` の昇順に並べ、**`prev` が前の作品、`next` が次の作品**。
+`WorkId` の昇順（作品を作った順）に並べ、**`prev` が前の作品、`next` が次の作品**。
 端では片方が空になり、そちらのリンクは表示しない。
 
 Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的生成が無いので
