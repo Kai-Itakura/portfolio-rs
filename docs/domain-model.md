@@ -46,10 +46,12 @@ Scott Wlaschin『Domain Modeling Made Functional』の書き方に合わせる�
 data ProjectId    = Ulid
 data TechnologyId = Ulid
 data WorkId       = Ulid
+data ImageKey     = String
 ```
 
-中身はどれも ULID だが、別の型なので取り違えられない。
+3 つの ID は中身がどれも ULID だが、別の型なので取り違えられない。
 `ProjectId` と `TechnologyId` は別システムが発行する。`WorkId` だけは、このサイトが作品を作るときに発行する。
+`ImageKey` は作品の画像を指すキーで、中身は文字列（下の「作品」を参照）。
 
 ### 期間
 
@@ -84,8 +86,8 @@ data Work =
     AND description: String
     AND liveSite: Option<String>
     AND body: String
-    AND cardImage: （型は未決）
-    AND mockUp: （型は未決）
+    AND cardImage: ImageKey
+    AND mockUp: ImageKey
 ```
 
 - `ProjectKind` は、案件の種類を表す**型の集まり**。`Professional` と `Personal` の 2 つの型だけが属し、ほかの型は足せない
@@ -98,6 +100,9 @@ data Work =
 - `liveSite` は稼働中のサイトへのリンク。手元でしか動かない作品は持たない
 - `body` は作品詳細の本文で、Markdown
 - 画像はカード画像とモックアップの 2 枚。カード画像は `/` と `/works` のカードに、モックアップは作品詳細に出す
+- **ドメインは画像の置き場を知らず、`ImageKey` だけを持つ。** キーを画像に引き当てるのはページ側で、
+  v1 は `asset!` の定数（ADR 0001）、管理画面を作ったあとはストレージの URL に引き当てる。
+  ドメインに Topcoat の `Asset` 型を持ち込まないため
 - **`WorkId` をスラッグと並び順に使う。** URL は `/works/{WorkId}`、並びは `WorkId` の昇順。
   ULID の前半は発行した時刻なので、並びは「このサイトで作品を作った順」になり、個人開発の期間の順ではない
 - 作品は個人開発の中に持つ子のエンティティなので、`WorkId` は案件の中で作品を見分けられればよい。
@@ -284,8 +289,6 @@ timeline   : List<AnyProject> -> List<TimelineItem>
 - 同期で新しく届いた案件の公開状態の既定値
 - 別システムから消えた案件が、また届いたときの扱い
 - 同期の仕組み。別システムのイベントをきっかけにすることは決定。具体的な仕組みは未定
-- 作品の画像（カード画像とモックアップ）を表す型。v1 は `asset!` の定数（ADR 0001）、
-  管理画面を作るときはストレージの URL になるので、どちらでも使える形を決める
 - 案件の技術スタックのデータ。v1 にコードで書く案件ごとの技術スタックは古いので見直す
 - 知らない技術が別システムから届いたとき。技術はデータ（開いた集合）なので受け入れられるが、
   カテゴリ名の揃え方（別システムでは「フレームワーク」）は連携するときに決める
