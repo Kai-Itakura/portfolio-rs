@@ -10,7 +10,7 @@
 | フレームワーク | Astro 5（完全静的出力） | Topcoat 0.10.0（サーバーレンダリング） |
 | 言語 | TypeScript / Astro | Rust |
 | スタイル | Tailwind CSS v4（Node 経由） | Tailwind CSS v4（Topcoat 経由・Node 不要） |
-| 作品データ | Content Collections（Markdown） | 本文は Markdown、メタと画像は Rust の定数（ADR 0001） |
+| 作品データ | Content Collections（Markdown） | 本文は Markdown、ほかのデータは JSONC（ADR 0003） |
 | 画像 | `astro:assets`（webp + srcset 自動生成） | Topcoat の asset システム（最適化は自前） |
 | フォント | Google Fonts（CDN） | Topcoat の `font-fontsource` で自己ホスト |
 | ホスティング | Cloudflare Workers（静的アセット） | Google Cloud Run（コンテナ） |
@@ -40,9 +40,12 @@ portfolio-rs/
 │   │   └── works/
 │   │       └── slug.rs
 │   ├── components/           # 共通コンポーネント
-│   └── domain/               # 案件・技術などのドメインの型（docs/domain-model.md）
+│   ├── domain/               # 案件・技術などのドメインの型（docs/domain-model.md）
+│   └── infrastructure/       # インメモリ DB と、v1 のデータの読み込み
 ├── assets/                   # 旧 src/assets/ の画像
-└── content/                  # 作品データ
+├── content/                  # 作品の本文（content/<作品 ID>.md）
+└── data/
+    └── v1.jsonc              # v1 の案件・技術・作品のデータ（ADR 0003）
 ```
 
 ## ルーティング
@@ -110,9 +113,9 @@ Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的
 
 **Topcoat には Markdown サポートが無い**ので、自分でパースする。
 
-決定は [ADR 0001](adr/0001-works-data-shape.md) のとおり。本文だけ Markdown に残して
-`include_str!` でコンパイル時に埋め込み、画像を含むメタ情報は Rust の定数に置く。
-`asset!` がコンパイル時のリテラルパスしか受け付けないため。
+決定は [ADR 0003](adr/0003-v1-data-in-jsonc.md) のとおり。作品のデータは `data/v1.jsonc` に、
+本文だけは `content/<作品 ID>.md` に置き、どちらも `include_str!` でコンパイル時に埋め込む。
+画像は `ImageKey`（ファイル名）で指し、`asset!` の定数への対応はページ側に書く。
 
 v1 は実行時のファイル I/O も DB も無い。管理画面（v2）を作る時点で、本文と画像を外部ストレージに、
 作品のデータを DB に移す。Cloud Run のファイルシステムは揮発性なので、アップロードしたものは
@@ -131,7 +134,7 @@ v1 は実行時のファイル I/O も DB も無い。管理画面（v2）を作
 STAR ログ）と連携して出す。v1 の案件データは、その置き換えを見越した形にしておく。
 
 **案件と技術の正は別システム。** 実務の案件も個人開発も別システムから届く。
-v1 は案件と技術をコードに直接書き、読み取り専用の QueryService の裏に隠す。
+v1 は案件と技術を `data/v1.jsonc` に書いて起動時にインメモリ DB へ読み込み、読み取り専用の QueryService の裏に隠す。
 連携後は、別システムのイベントをきっかけに同期し、案件と技術の写しを DB に置く（同期の具体的な仕組みは未定）。
 件数とゲージは保存せず、表示のたびに写しから数える。
 

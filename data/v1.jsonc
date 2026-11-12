@@ -1,0 +1,11 @@
+// v1 のデータ。コンパイル時に埋め込み、起動時にインメモリ DB へ読み込む。
+// 形は src/infrastructure/v1_data.rs の受け取り用の型を見ること。
+{
+  // 技術。category: "Language" | "Framework" | "Database" | "Infrastructure" | "BusinessTool"
+  "technologies": [],
+
+  // 案件。kind: "professional" | "personal"
+  // publication: "published" | "unpublished" | "removedUpstream"
+  // period.end を省くと継続中。work は個人開発だけが持てる。
+  "projects": []
+}
