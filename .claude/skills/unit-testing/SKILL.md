@@ -26,6 +26,8 @@ mod tests {
 ## 名前
 
 英語の `snake_case` で、何を確かめるかを書く。形は `<関数>_<結果>_when_<条件>` を基本にする。
+**期待する結果を必ず名前に入れる。** `mark_removed_upstream_from_published` のように入力だけを書いた名前では、
+テストが落ちたときに何が壊れたのか分からないため。
 
 - `publish_fails_when_removed_upstream`
 - `publish_keeps_published_when_already_published`
@@ -46,7 +48,9 @@ fn publish_fails_when_removed_upstream() {
 }
 ```
 
-- Act は 1 つの関数呼び出しにする。1 つのテストで確かめるのは 1 つの振る舞い
+- Act は 1 つの関数呼び出しにして、結果を変数で受ける。準備と実行を 1 行にまとめたり（`let result = project(...).publish();`）、
+  呼び出しを `assert!` の中に書いたりしない。3 段が見て分かれていると、何を準備し何を確かめたかが読み取りやすいため
+- 1 つのテストで確かめるのは 1 つの振る舞い
 - `Result` や `enum` は `matches!` で確かめる。テストのためだけにドメインの型へ `PartialEq` などの derive を足さない。
   足したほうがよいと思ったら、理由を添えて確認する
 - 成功した値の中身を確かめたいときは `let Ok(value) = result else { panic!("expected Ok, got an error") };` で取り出す
@@ -109,6 +113,8 @@ cargo +nightly llvm-cov --branch --text 2>/dev/null | grep -B2 -A4 "Branch ("
 2. `cargo test` の結果（通った数・落ちた数）
 3. テストした範囲の網羅率の表（`--summary-only` の、対象ファイルの行と TOTAL）
 4. C2 で足りない条件があれば、その場所（ファイル:行）と理由。わざとテストしないもの（型で守っている規則など）はそう書く
+5. 網羅率が 100% でない理由。多くはテストの側の `let ... else` や `matches!` のガードの、テストが落ちたときだけ通る側。
+   テストする関数の条件がすべて真と偽を通っているかを、表の数字とは分けて書く
 
 ドメインの型がまだどこからも使われていないと、`cargo test` で「使われていない」という警告が出ることがある。
 テストの結果とは関係ないので、警告が出たことだけ報告する。

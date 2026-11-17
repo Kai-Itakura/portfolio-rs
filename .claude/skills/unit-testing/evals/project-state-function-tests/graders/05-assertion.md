@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-add_work について、成功・RemovedUpstream・AlreadyHasWork と、消えた案件にすでに作品がある場合にどちらのエラーが返るか（検査の順番）を確かめている
+すべてのテストで、準備・実行・確認が別の行に分かれて空行で区切られ、実行が assert! の中や準備と同じ行に書かれていない

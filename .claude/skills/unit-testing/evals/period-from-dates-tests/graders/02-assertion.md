@@ -4,4 +4,4 @@ focus: trace
 weight: 1
 ---
 
-テスト名がすべて英語の snake_case で、確かめる振る舞いと条件が名前から分かる
+終了日が無いと Ongoing、終了日が開始日より後だと Past、終了日が開始日より前だと EndBeforeStart になることをそれぞれ確かめるテストがある
