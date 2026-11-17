@@ -13,6 +13,7 @@ use crate::components::{
     button::{ButtonSize, ButtonVariant, button_variants},
     work_card::work_card,
 };
+use crate::infrastructure::in_memory_db::InMemoryDb;
 
 const CHEVRON_RIGHT: IconData = iconify::iconify_icon!("lucide:chevron-right");
 
@@ -20,6 +21,10 @@ pub fn router() -> Router {
     topcoat::router::module_router!()
         .discover()
         .assets(AssetBundle::load().unwrap())
+        .app_context(
+            InMemoryDb::from_v1_data()
+                .unwrap_or_else(|error| panic!("data/v1.jsonc is invalid: {error}")),
+        )
         .build()
 }
 

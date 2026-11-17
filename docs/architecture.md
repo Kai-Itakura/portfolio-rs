@@ -10,7 +10,7 @@
 | フレームワーク | Astro 5（完全静的出力） | Topcoat 0.10.0（サーバーレンダリング） |
 | 言語 | TypeScript / Astro | Rust |
 | スタイル | Tailwind CSS v4（Node 経由） | Tailwind CSS v4（Topcoat 経由・Node 不要） |
-| 作品データ | Content Collections（Markdown） | 本文は Markdown、メタと画像は Rust の定数（ADR 0001） |
+| 作品データ | Content Collections（Markdown） | 本文は Markdown、ほかのデータは JSONC（ADR 0003） |
 | 画像 | `astro:assets`（webp + srcset 自動生成） | Topcoat の asset システム（最適化は自前） |
 | フォント | Google Fonts（CDN） | Topcoat の `font-fontsource` で自己ホスト |
 | ホスティング | Cloudflare Workers（静的アセット） | Google Cloud Run（コンテナ） |
@@ -40,9 +40,12 @@ portfolio-rs/
 │   │   └── works/
 │   │       └── slug.rs
 │   ├── components/           # 共通コンポーネント
-│   └── domain/               # 案件・技術などのドメインの型（docs/domain-model.html）
+│   ├── domain/               # 案件・技術などのドメインの型（docs/domain-model.md）
+│   └── infrastructure/       # インメモリ DB と、v1 のデータの読み込み
 ├── assets/                   # 旧 src/assets/ の画像
-└── content/                  # 作品データ
+├── content/                  # 作品の本文（content/<作品 ID>.md）
+└── data/
+    └── v1.jsonc              # v1 の案件・技術・作品のデータ（ADR 0003）
 ```
 
 ## ルーティング
@@ -56,6 +59,8 @@ Astro のファイルベースルーティングとほぼ同じ考え方にな�
 | `/about` | `src/app/about.rs` | `src/pages/about.astro` |
 | `/works` | `src/app/works.rs` | `src/pages/works/index.astro` |
 | `/works/{slug}` | `src/app/works/slug.rs` | `src/pages/works/[slug].astro` |
+
+`/works/{slug}` の `slug` は作品の ID（`WorkId`）。旧サイトの `/works/sugutabe` のような名前の URL は引き継がない。
 
 `src/app.rs` のレイアウトが全ページを包む（旧 `BaseLayout.astro` に相当）。
 
@@ -82,7 +87,7 @@ Topcoat の `$(...)` 式も Islands も使わない。
 | `Posts.astro` | 共通コンポーネントのカード |
 | `Hobby.astro` / `HobbyList.astro` | カードを使い回す |
 | `Skills.astro` / `Bar.astro` | `/about` の年表 + 使用件数 |
-| `WorksHeader.astro` / `WorksBody.astro` / `WorksImage.astro` | `/works/{slug}` の帯画像・本文 + メタ・スクショ 2 枚 |
+| `WorksHeader.astro` / `WorksBody.astro` / `WorksImage.astro` | `/works/{slug}` の本文 + メタ・モックアップ |
 | `Pagination.astro` | `/works/{slug}` の前後ナビ |
 | `Button.astro` | 共通コンポーネントのボタン（ソリッド / ゴースト） |
 | `DefinitionList.astro` | `/works/{slug}` の `.metadl` |
@@ -90,7 +95,7 @@ Topcoat の `$(...)` 式も Islands も使わない。
 
 ### 前後の作品ナビゲーションの仕様
 
-`order` の昇順に並べ、**`prev` が前の作品、`next` が次の作品**。
+`WorkId` の昇順（作品を作った順）に並べ、**`prev` が前の作品、`next` が次の作品**。
 端では片方が空になり、そちらのリンクは表示しない。
 
 Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的生成が無いので
@@ -108,13 +113,19 @@ Astro では `getStaticPaths` 内で計算していたが、Topcoat には静的
 
 **Topcoat には Markdown サポートが無い**ので、自分でパースする。
 
-決定は [ADR 0001](adr/0001-works-data-shape.md) のとおり。本文だけ Markdown に残して
-`include_str!` でコンパイル時に埋め込み、画像を含むメタ情報は Rust の定数に置く。
-`asset!` がコンパイル時のリテラルパスしか受け付けないため。
+決定は [ADR 0003](adr/0003-v1-data-in-jsonc.md) のとおり。作品のデータは `data/v1.jsonc` に、
+本文だけは `content/<作品 ID>.md` に置き、どちらも `include_str!` でコンパイル時に埋め込む。
+画像は `ImageKey`（ファイル名）で指し、`asset!` の定数への対応はページ側に書く。
 
 v1 は実行時のファイル I/O も DB も無い。管理画面（v2）を作る時点で、本文と画像を外部ストレージに、
 作品のデータを DB に移す。Cloud Run のファイルシステムは揮発性なので、アップロードしたものは
-コンテナの中には置けない。作品（`Work`）は、このサイトが書き込む唯一のデータになる。
+コンテナの中には置けない。このサイトが書き込むデータは、案件の公開状態と作品（`Work`）の 2 つになる。
+
+作品は個人開発の中に持ち、1 つの個人開発に 1 つまで持てる。作品は技術スタックを持たず、
+持ち主の個人開発の技術スタックをすべてそのまま見せる。個人開発が公開されていなければ、作品も見せない。
+別システムから案件が消えても、案件と作品は消さずに残し、二度と公開しない。
+このサイトで消せるのは、別システムから消えた案件だけ。
+型は [`domain-model.md`](domain-model.md) を見ること。
 
 ## 使用技術（Stack パネル）
 
@@ -122,12 +133,18 @@ v1 は実行時のファイル I/O も DB も無い。管理画面（v2）を作
 コードで数える。** 最終的には、転職活動用に別で管理しているアプリ（プロジェクト・技術スタック・
 STAR ログ）と連携して出す。v1 の案件データは、その置き換えを見越した形にしておく。
 
-**データの正は別アプリ。** v1 は案件と技術をコードに直接書き、読み取り専用の QueryService の裏に隠す。
-API ができたら QueryService の中身だけを差し替える。
+**案件と技術の正は別システム。** 実務の案件も個人開発も別システムから届く。
+v1 は案件と技術を `data/v1.jsonc` に書いて起動時にインメモリ DB へ読み込み、読み取り専用の QueryService の裏に隠す。
+連携後は、別システムのイベントをきっかけに同期し、案件と技術の写しを DB に置く（同期の具体的な仕組みは未定）。
+件数とゲージは保存せず、表示のたびに写しから数える。
+
+**数えるのは公開している案件だけ。** どの案件を公開するかはこのサイトが決め、公開していない案件は
+年表にも使用件数にも出ない。作品は数えない。
 
 読み取りは `Project` 集約を経由しない。QueryService が表示用のデータを返し、並び順もそこで決める。
 `Project` の `tech_stack` は技術 ID の集合（`HashSet`）で、順序を持たない。
-このサイトでの `Project` 集約の役割は未決。型の設計は [`domain-model.html`](domain-model.html) を見ること。
+`Project` 集約は、別システムから届く項目と、このサイトが決める公開状態・作品を合わせ持つ。
+型の設計は [`domain-model.md`](domain-model.md) を見ること。
 
 ### カテゴリ
 
@@ -139,7 +156,7 @@ API ができたら QueryService の中身だけを差し替える。
 | ライブラリ・フレームワーク | 表示する | React, Next.js, Tailwind CSS, React Router v7, Topcoat, NestJS, Prisma |
 | DB | 表示する | MySQL, PostgreSQL |
 | インフラ・開発ツール | 表示する | Docker, AWS, GitHub Actions, Kubernetes |
-| 業務ツール | 表示する | （v1 は空。別アプリの API から届く） |
+| 業務ツール | 表示する | （v1 は空。別システムの API から届く） |
 
 分類で迷ったものの扱い: HTML / CSS / Sass / SQL / Node.js は言語、Tailwind CSS と Prisma は
 ライブラリ・フレームワーク。別システムに出した指示ではカテゴリ名が「フレームワーク」なので、
@@ -160,6 +177,9 @@ API ができたら QueryService の中身だけを差し替える。
 システム連携ができた時点で決める。
 
 ### 案件（2026-09-30 時点・10 件）
+
+この表の技術スタックは古く、見直す予定。個人開発も期間を持つことになったので、
+「x 個人開発（期間なし）」の行と #0 の分け方も見直しの対象になる。カテゴリはいまの 5 つで正しい。
 
 | # | 期間 | 案件 | 技術 |
 | --- | --- | --- | --- |
@@ -185,8 +205,8 @@ API ができたら QueryService の中身だけを差し替える。
 3. 使い始めた時期（案件の開始月）が新しい順
 4. 名前順
 
-**個人開発は 2 と 3 で最も古い扱いにする。** 件数には含めるが、同じ件数どうしの比較では
-実務とこのサイトを優先する。3 は「最近身に付けた技術ほど前に出す」ための基準で、
+**個人開発は 2 と 3 で最も古い扱いにする。**（個人開発が期間を持つようになったので見直す。未決）
+件数には含めるが、同じ件数どうしの比較では実務とこのサイトを優先する。3 は「最近身に付けた技術ほど前に出す」ための基準で、
 これが無いと 26/06 で並ぶ Go が名前順で後ろに回る。
 
 ### 表示
@@ -206,7 +226,7 @@ API ができたら QueryService の中身だけを差し替える。
 | インフラ・開発ツール | **Docker 4 → AWS 4 → GitHub Actions 2 → Kubernetes 1** |
 | 業務ツール | （v1 は空。API と連携してから出る） |
 
-業務ツールは 2026-10-17 にパネルへ出すと決めた。データは別アプリの API から届くので、
+業務ツールは 2026-10-17 にパネルへ出すと決めた。データは別システムの API から届くので、
 v1 では空のままでよい。空のカテゴリを見出しごと出すか隠すかは、表示を作るときに決める。
 
 ゲージの最大値は、業務ツールが入っても**全カテゴリ共通のまま**にする。Slack のように多くの案件で

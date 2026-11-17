@@ -1,11 +1,10 @@
 # ドメインモデル
 
-案件（Project）と技術（Technology）のドメインを、関数型ドメインモデリングの形で書いたもの。
+案件（Project）・技術（Technology）・作品（Work）のドメインを、関数型ドメインモデリングの形で書いたもの。
 ドメインは**型**（データ）と**関数**（振る舞い）に分けて表す。型はふるまいを持たず、
 ふるまいは型を受け取って型を返す関数として書く。
 
-決定の経緯と未決事項は [`domain-model.html`](domain-model.html)、
-データの流れは [`architecture.md`](architecture.md) を見ること。
+用語の定義は [`CONTEXT.md`](../CONTEXT.md)、データの流れは [`architecture.md`](architecture.md) を見ること。
 
 ## 記法
 
@@ -19,6 +18,31 @@ Scott Wlaschin『Domain Modeling Made Functional』の書き方に合わせる�
 | `A -> B` | A を受け取り B を返す関数 | `fn(A) -> B` |
 | `Result<A, E>` | 成功なら A、失敗なら E | `Result<A, E>` |
 
+## データの持ち主
+
+`Project` は、別システムから届く項目と、このサイトが決める項目を合わせ持つ集約。
+
+| 項目 | 持ち主 | このサイトでは |
+| --- | --- | --- |
+| `id` / `title` / `description` / 種類 / `period` / `techStack` | 別システム | 読むだけ（写し） |
+| 公開状態（`publication`） | **このサイト** | 書く・読む |
+| 作品（`work`） | **このサイト** | 書く・読む |
+| 技術 | 別システム | 読むだけ（写し） |
+
+- 案件と技術は、実務も個人開発も別システムから届く
+- 同期は別システムのイベントをきっかけにする。具体的な仕組みは未定
+- 同期のときに案件と技術の写しを保存し、表示は写しから組み立てる
+- 同期は、別システムから届く項目だけを書き換える。公開状態と作品には触れない
+- **同期は案件を消さない。** 別システムから消えた案件は、作品ごと残して「別システムから消えた」印を付ける。
+  作品はこのサイトで作った多くのデータを持つので、消すと取り戻せないため
+- このサイトで案件を消せるのは、別システムから消えた案件だけ。消すと作品も一緒に消える
+- 同期で新しく届いた案件は、非公開（`Unpublished`）から始まる。見せるかどうかは、このサイトで決めてから公開する
+- 別システムから消えた案件が、また届くことは無い（前提）。届いた場合の扱いは決めていない
+- v1 は同期が無く、データを `data/v1.jsonc` に書いて起動時にインメモリ DB へ読み込む（[ADR 0003](adr/0003-v1-data-in-jsonc.md)）
+- **別システムとの契約は、このサイトのドメインに合わせる（いまの計画）。** 同期のコードが届いたデータをドメインの型へ翻訳し、
+  ドメインは契約に依存しない。カテゴリ名の違いは翻訳で対応させ、5 つにないカテゴリは契約違反としてエラーにする
+  （[ADR 0002](adr/0002-other-system-contract.md)）
+
 ## 型
 
 ### 単純型
@@ -26,11 +50,15 @@ Scott Wlaschin『Domain Modeling Made Functional』の書き方に合わせる�
 ```
 data ProjectId    = Ulid
 data TechnologyId = Ulid
+data WorkId       = Ulid
+data ImageKey     = String
 ```
 
-中身はどちらも ULID だが、別の型なので取り違えられない。ID は別アプリが発行し、このサイトは作らない。
+3 つの ID は中身がどれも ULID だが、別の型なので取り違えられない。
+`ProjectId` と `TechnologyId` は別システムが発行する。`WorkId` だけは、このサイトが作品を作るときに発行する。
+`ImageKey` は作品の画像を指すキーで、中身は文字列（下の「作品」を参照）。
 
-### 期間と案件の種類
+### 期間
 
 ```
 data Period =
@@ -39,30 +67,89 @@ data Period =
         AND end: NaiveDate
     OR Ongoing
         start: NaiveDate
-
-data ProjectKind =
-    Professional
-        period: Period
-    OR Personal
 ```
 
 - 終了日の無い `Past` と、終了日のある `Ongoing` は書けない
-- 個人開発は期間を持たない。`Personal` にはデータが無い
+- 実務の案件も個人開発も期間を持つ。どちらも開始日は必ずあり、終了日は無いこともある
+
+### 案件の種類と作品
+
+```
+kind ProjectKind =
+    Professional
+    OR Personal
+
+data Professional =
+    （データなし）
+
+data Personal =
+    work: Option<Work>
+
+data Work =
+    id: WorkId
+    AND title: String
+    AND description: String
+    AND liveSite: Option<String>
+    AND body: String
+    AND cardImage: ImageKey
+    AND mockUp: ImageKey
+```
+
+- `ProjectKind` は、案件の種類を表す**型の集まり**。`Professional` と `Personal` の 2 つの型だけが属し、ほかの型は足せない
+  （コードでは封じたトレイト。下の「案件」を参照）
+- 期間の形は種類によらず同じなので、**期間から種類を推測しない**。種類は別システムのデータが明示する
+- 作品は個人開発の中に持つ。実務の案件は作品を持てず、1 つの個人開発に作品は 1 つまで。どちらも型で守る
+- 作品は技術スタックを持たない。持ち主の個人開発の技術スタックをすべてそのまま見せる
+- 期間と言語も持たない。どちらも持ち主の個人開発から導く（期間は `period`、言語は技術スタックのうち言語のカテゴリのもの）
+- タイトルと説明は、個人開発とは別に作品自身が持つ
+- `liveSite` は稼働中のサイトへのリンク。手元でしか動かない作品は持たない
+- `body` は作品詳細の本文で、Markdown
+- 画像はカード画像とモックアップの 2 枚。カード画像は `/` と `/works` のカードに、モックアップは作品詳細に出す
+- **ドメインは画像の置き場を知らず、`ImageKey` だけを持つ。** キーを画像に引き当てるのはページ側で、
+  v1 は `asset!` の定数（ADR 0001）、管理画面を作ったあとはストレージの URL に引き当てる。
+  ドメインに Topcoat の `Asset` 型を持ち込まないため
+- **`WorkId` をスラッグと並び順に使う。** URL は `/works/{WorkId}`、並びは `WorkId` の昇順。
+  ULID の前半は発行した時刻なので、並びは「このサイトで作品を作った順」になり、個人開発の期間の順ではない
+- 作品は個人開発の中に持つ子のエンティティなので、`WorkId` は案件の中で作品を見分けられればよい。
+  ただ、スラッグに使うのでサイト全体で一意になる ULID にする
+
+### 公開状態
+
+```
+data Publication =
+    Published
+    OR Unpublished
+    OR RemovedUpstream
+```
+
+- 公開している案件だけが、年表・使用件数・作品として見える
+- `RemovedUpstream` は、別システムから消えた案件。最初から無かったものとして扱い、二度と公開しない
+- 「消えたのに公開している」状態は、2 つの真偽値ではなく 1 つの直和型にすることで書けなくしている
 
 ### 案件
 
 ```
-data Project =
+data Project<K: ProjectKind> =
     id: ProjectId
     AND title: String
     AND description: String
-    AND kind: ProjectKind
+    AND period: Period
     AND techStack: Set<TechnologyId>
-    AND showInTimeline: bool
+    AND publication: Publication
+    AND kind: K
+
+data AnyProject =
+    Professional of Project<Professional>
+    OR Personal of Project<Personal>
 ```
 
+- `Project` は種類 `K` を型の引数に持つ。`Project<Professional>` と `Project<Personal>` は別の型になり、
+  個人開発だけの関数は `Project<Personal>` だけが受け取る
+- `K` に使えるのは `ProjectKind` に属する 2 つの型だけ。コードでは `K: ProjectKind` という制約（トレイト境界）で守り、
+  `ProjectKind` は封じたトレイト（sealed trait）にして、ほかの型が実装できないようにする
+- `AnyProject` は、種類がまだ分からない案件。保存先から読んだ案件や、種類の混ざった一覧（年表など）に使う。
+  種類ごとの関数を呼ぶ前に、`AnyProject` を 1 度だけ振り分ける
 - `techStack` は技術そのものではなく、ID の集合で参照する。同じ技術は 2 回入らず、順序は持たない
-- `id` と `showInTimeline` はまだコードに無い。`showInTimeline` の名前は仮
 
 ### 技術とカテゴリ
 
@@ -88,22 +175,37 @@ data Technology =
 | `Infrastructure` | インフラ・開発ツール |
 | `BusinessTool` | 業務ツール |
 
-カテゴリは技術の側が持つ。案件はカテゴリを持たない。
+技術は必ずどれか 1 つのカテゴリに属する。カテゴリは技術の側が持ち、案件は持たない。
 
 ### エラー
 
 ```
 data PeriodError =
     EndBeforeStart
+
+data PublishError =
+    RemovedUpstream
+
+data DeleteError =
+    NotRemovedUpstream
+
+data AddWorkError =
+    RemovedUpstream
+    OR AlreadyHasWork
 ```
 
 ## 型どうしの関係
 
 ```
-Project ──┬── ProjectId
-          ├── ProjectKind ── Period
-          └── Set<TechnologyId> ┄┄┄> Technology ──┬── TechnologyId
-                                                  └── Category
+AnyProject ──┬── Project<Professional>
+             └── Project<Personal>
+
+Project<K> ──┬── ProjectId
+             ├── Period
+             ├── Publication
+             ├── K（Professional か Personal）── Work（Personal のみ、1 つまで）
+             └── Set<TechnologyId> ┄┄┄> Technology ──┬── TechnologyId
+                                                     └── Category
 ```
 
 - 実線（`──`）は値として中に持つ
@@ -118,23 +220,54 @@ Project ──┬── ProjectId
 
 ```
 periodFromDates    : NaiveDate -> Option<NaiveDate> -> Result<Period, PeriodError>
-projectKindFrom    : Option<Period> -> ProjectKind
+projectIdFrom      : Ulid -> ProjectId
 technologyIdFrom   : Ulid -> TechnologyId
 ```
 
 - `periodFromDates` は、終了日が無ければ `Ongoing`、あれば `Past` を返す。
   終了日が開始日より前なら `EndBeforeStart` で失敗する
-- `projectKindFrom` は、期間が無ければ `Personal` を返す。失敗しない
-- コードでは `Period::from_dates`、`ProjectKind::from_period`、`From<Ulid> for TechnologyId`
+- 種類は別システムのデータをそのまま使うので、期間から種類を導く関数は持たない
+- コードでは `Period::from_dates`、`From<Ulid> for ProjectId`、`From<Ulid> for TechnologyId`
+
+### 案件の状態を変える（このサイトが持つ項目だけ）
+
+```
+publish            : Project<K> -> Result<Project<K>, PublishError>
+unpublish          : Project<K> -> Project<K>
+markRemovedUpstream: Project<K> -> Project<K>
+ensureDeletable    : Project<K> -> Result<(), DeleteError>
+addWork            : Work -> Project<Personal> -> Result<Project<Personal>, AddWorkError>
+```
+
+- 公開状態の関数は、どの種類 `K` にも 1 度だけ書く（コードでは `impl<K: ProjectKind> Project<K>`）
+- `addWork` は `Project<Personal>` だけが受け取る（コードでは `impl Project<Personal>`）。
+  実務の案件に作品を足す呼び出しは、型の上で書けない
+
+- `publish` は、別システムから消えた案件なら `RemovedUpstream` で失敗する
+- `unpublish` は、公開している案件を非公開にする。消えた案件はそのまま
+- `markRemovedUpstream` は、同期が別システムから消えた案件に使う。公開状態は `RemovedUpstream` になる
+- `addWork` は、別システムから消えた案件なら `RemovedUpstream`、
+  すでに作品があれば `AlreadyHasWork` で失敗する（この順に検査する）。
+  公開していない個人開発にも足せる。作品は、個人開発を公開するまで見えない
+- `ensureDeletable` は、別システムから消えた案件でなければ `NotRemovedUpstream` で失敗する。
+  実際に消すのは保存を担う側で、消す前に必ずこれを通す
+- どれも純粋な関数。コードでは `self` を受け取り、新しい `Project` を返すメソッドにする（`&mut self` で書き換えない）。
+  失敗すると渡した値は返らないが、失敗したものは保存し直さないので困らない。
+  `ensureDeletable` は何も変えないので `&self` を受け取る
 
 ### 表示のための計算（未実装）
 
-どれも純粋な関数で、入力だけから出力が決まる。保存はしない。
+どれも純粋な関数で、入力だけから出力が決まる。結果は保存しない。
 
 ```
-stackPanel : List<Project> -> List<Technology> -> List<StackRow>
-timeline   : List<Project> -> List<TimelineItem>
+stackPanel : List<AnyProject> -> List<Technology> -> List<StackRow>
+timeline   : List<AnyProject> -> List<TimelineItem>
 ```
+
+- どちらも公開している案件だけを対象にする。作品も、持ち主の個人開発が公開しているときだけ見せる
+- `stackPanel` は案件だけを数え、作品は数えない。どの公開している案件にも使われていない技術は行にしない
+- 件数とゲージは、保存した写しから表示のたびに計算する。保存すると元のデータと食い違う余地が生まれ、
+  ゲージは最大値が変わるたびに全行が変わるため
 
 `StackRow` と `TimelineItem` は表示用の型で、ドメインの外（読み取り側）に置く。
 件数・ゲージ・並び順の規則は [`architecture.md`](architecture.md) の「使用技術（Stack パネル）」にある。
@@ -143,15 +276,20 @@ timeline   : List<Project> -> List<TimelineItem>
 
 | 規則 | 守り方 |
 | --- | --- |
-| 個人開発は期間を持たない | 型（`Personal` にデータが無い） |
 | 継続中の期間は終了日を持たない | 型（`Ongoing` に `end` が無い） |
 | 1 つの案件に同じ技術は 2 回入らない | 型（`Set`） |
 | 案件 ID と技術 ID を取り違えない | 型（別の単純型） |
+| 案件の種類を期間から取り違えない | 型（種類を型の引数 `K` で明示して持つ） |
+| 案件の種類は実務の案件と個人開発の 2 つだけ | 型（封じたトレイト `ProjectKind`） |
+| 実務の案件は作品を持たない | 型（`Professional` にデータが無く、`addWork` は `Project<Personal>` だけが受け取る） |
+| 1 つの個人開発に作品は 1 つまで | 型（`Option<Work>`） |
+| 別システムから消えた案件は公開しない | 型（`Publication` の 1 つの状態）と関数（`publish`） |
 | 終了日は開始日より前にならない | 関数（`periodFromDates`）。`Period::Past { .. }` と直接書くと検査を通らない |
+| 消せるのは別システムから消えた案件だけ | 関数（`ensureDeletable`）。保存を担う側が消す前に呼ぶ |
+| 別システムから消えた案件には作品を足せない | 関数（`addWork`） |
 | 技術の名前が重複しない | 未決。1 つの `Technology` では検査できない、一覧全体の規則 |
 
-## v2: Work — 作品
+## 未決
 
-`Project` とは別の概念で、このサイトが書き込む唯一の集約。型と関数はまだ設計していない。
-決まっている規則は、スラッグが重複しないことと、並び順が一意であること。
-状態（下書き・公開など）を持つなら、状態ごとの直和型と、状態を移す関数で表す。
+- 同期の仕組み。別システムのイベントをきっかけにすることは決定。具体的な仕組みは未定
+- 案件の技術スタックのデータ。v1 にコードで書く案件ごとの技術スタックは古いので見直す

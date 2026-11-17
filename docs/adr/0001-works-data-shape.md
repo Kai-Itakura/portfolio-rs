@@ -1,3 +1,7 @@
+---
+status: superseded by ADR-0003
+---
+
 # 作品データは本文だけ Markdown、メタと画像は Rust の定数
 
 1 作品の情報が `content/<slug>.md` と `src/works.rs` の 2 箇所に分かれている。
