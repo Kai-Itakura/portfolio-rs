@@ -30,7 +30,7 @@ mod tests {
 
 ## 名前
 
-英語の `snake_case` で、何を確かめるかを書く。形は `<関数>_<結果>_when_<条件>` を基本にする。
+何を確かめるかを書く。名前の形は `lint/src/rules/test_name.rs` のルールに従う。
 **期待する結果を必ず名前に入れる。** `mark_removed_upstream_from_published` のように入力だけを書いた名前では、
 テストが落ちたときに何が壊れたのか分からないため。
 

@@ -14,8 +14,8 @@ description: このリポジトリのドメイン層（src/domain/ 以下の Rus
 - `CONTEXT.md` — 用語の定義。型や関数の名前はここの言葉に合わせる
 - `docs/domain-model.md` — 型・関数・データの持ち主・不変条件のありか・未決事項。いまの設計の正
 - `docs/adr/` — 設計判断の理由。特に別システムとの契約（ADR 0002）と v1 のデータ（ADR 0003）
-- `lint/src/rules/` — このリポジトリ独自の静的解析のルール。1 ファイルが 1 ルールで、ドメインの書き方の決まり
-  （`&mut self` を使わない、`TryFrom` を実装しない、など）が入っている。書くコードはこれらのルールに違反しないようにする
+- `lint/src/rules/` — このリポジトリ独自の静的解析のルール。1 ファイルが 1 ルールで、ドメインの書き方の決まりが入っている。
+  書くコードはこれらのルールに違反しないようにする
 - いま触るファイルと、その周りの既存コード。書き方は既存コードに合わせる
 
 依頼が文書と食い違うとき、文書だけでは決められないときは、推測で埋めずに書く前に確認する。
@@ -32,7 +32,7 @@ description: このリポジトリのドメイン層（src/domain/ 以下の Rus
   `impl Project<Personal>` で表している。`ProjectKind` は封じたトレイト（sealed trait）なので、種類を足すのは
   `src/domain/project/project_kind.rs` の中だけでできる
 - **失敗しうる生成はスマートコンストラクタにする。** `Result<Self, XxxError>` を返す名前付きの関数で検査する
-  （`Period::from_dates` が例）。既存の書き方に揃えるため、`TryFrom` ではなく名前付きの関数にする。
+  （`Period::from_dates` が例）。
   検査を通らずに作れないよう、検査する値を包む型は中身を非公開にする。
   型で守れない規則は、`domain-model.md` の不変条件の表に「関数（…）」として書く
 - **ドメインは外を知らない。** `serde`・Topcoat の型（`Asset` など）・JSONC・HTTP・DB をドメインに持ち込まない。
@@ -42,7 +42,7 @@ description: このリポジトリのドメイン層（src/domain/ 以下の Rus
 
 ## 関数の決まり
 
-関数はできるだけ純粋にする。`&mut self` で書き換えず、値を受け取って新しい値を返す。
+関数はできるだけ純粋にし、値を受け取って新しい値を返す。
 
 ```rust
 pub fn publish(self) -> Result<Self, PublishError> {
