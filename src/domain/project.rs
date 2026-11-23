@@ -5,6 +5,7 @@ pub mod project_kind;
 pub mod publication;
 pub mod work;
 pub mod work_id;
+pub mod year_month;
 
 use std::collections::HashSet;
 

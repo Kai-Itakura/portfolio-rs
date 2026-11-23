@@ -7,7 +7,6 @@
 use std::collections::HashSet;
 use std::fmt;
 
-use chrono::NaiveDate;
 use serde::Deserialize;
 use ulid::Ulid;
 
@@ -18,6 +17,7 @@ use crate::domain::project::project_kind::{Personal, Professional};
 use crate::domain::project::publication::Publication;
 use crate::domain::project::work::Work;
 use crate::domain::project::work_id::WorkId;
+use crate::domain::project::year_month::YearMonth;
 use crate::domain::project::{AnyProject, Project};
 use crate::domain::technology::Technology;
 use crate::domain::technology::category::Category;
@@ -39,7 +39,7 @@ pub struct V1Data {
 pub enum LoadError {
     Parse(String),
     InvalidId(String),
-    InvalidDate(String),
+    InvalidYearMonth(String),
     InvalidPeriod { project: String, error: PeriodError },
     UnknownTechnology { project: String, technology: String },
     WorkOnProfessionalProject(String),
@@ -51,7 +51,9 @@ impl fmt::Display for LoadError {
         match self {
             Self::Parse(message) => write!(f, "cannot parse the file: {message}"),
             Self::InvalidId(id) => write!(f, "invalid ULID: {id}"),
-            Self::InvalidDate(date) => write!(f, "invalid date (expected YYYY-MM-DD): {date}"),
+            Self::InvalidYearMonth(text) => {
+                write!(f, "invalid year and month (expected YYYY-MM): {text}")
+            }
             Self::InvalidPeriod { project, error } => {
                 write!(f, "invalid period in project {project}: {error:?}")
             }
@@ -194,8 +196,8 @@ fn technology(data: TechnologyData) -> Result<Technology, LoadError> {
 fn project(data: ProjectData, known: &HashSet<TechnologyId>) -> Result<AnyProject, LoadError> {
     let id = ProjectId::from(ulid(&data.id)?);
     let period = Period::from_dates(
-        date(&data.period.start)?,
-        data.period.end.as_deref().map(date).transpose()?,
+        year_month(&data.period.start)?,
+        data.period.end.as_deref().map(year_month).transpose()?,
     )
     .map_err(|error| LoadError::InvalidPeriod {
         project: data.id.clone(),
@@ -273,7 +275,13 @@ fn ulid(text: &str) -> Result<Ulid, LoadError> {
     Ulid::from_string(text).map_err(|_| LoadError::InvalidId(text.to_string()))
 }
 
-fn date(text: &str) -> Result<NaiveDate, LoadError> {
-    text.parse()
-        .map_err(|_| LoadError::InvalidDate(text.to_string()))
+fn year_month(text: &str) -> Result<YearMonth, LoadError> {
+    let invalid = || LoadError::InvalidYearMonth(text.to_string());
+    let (year, month) = text.split_once('-').ok_or_else(invalid)?;
+    if year.len() != 4 || month.len() != 2 {
+        return Err(invalid());
+    }
+    let year = year.parse().map_err(|_| invalid())?;
+    let month = month.parse().map_err(|_| invalid())?;
+    YearMonth::new(year, month).map_err(|_| invalid())
 }

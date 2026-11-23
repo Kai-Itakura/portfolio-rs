@@ -61,16 +61,22 @@ data ImageKey     = String
 ### 期間
 
 ```
+data YearMonth =
+    year: Int
+    AND month: Int   // 1〜12
+
 data Period =
     Past
-        start: NaiveDate
-        AND end: NaiveDate
+        start: YearMonth
+        AND end: YearMonth
     OR Ongoing
-        start: NaiveDate
+        start: YearMonth
 ```
 
-- 終了日の無い `Past` と、終了日のある `Ongoing` は書けない
-- 実務の案件も個人開発も期間を持つ。どちらも開始日は必ずあり、終了日は無いこともある
+- 期間は月単位で、日は持たない
+- 終了月の無い `Past` と、終了月のある `Ongoing` は書けない
+- 実務の案件も個人開発も期間を持つ。どちらも開始月は必ずあり、終了月は無いこともある
+- 開始月と終了月が同じ（1 ヶ月だけの案件）でもよい
 
 ### 案件の種類と作品
 
@@ -180,6 +186,9 @@ data Technology =
 ### エラー
 
 ```
+data YearMonthError =
+    MonthOutOfRange
+
 data PeriodError =
     EndBeforeStart
 
@@ -201,7 +210,7 @@ AnyProject ──┬── Project<Professional>
              └── Project<Personal>
 
 Project<K> ──┬── ProjectId
-             ├── Period
+             ├── Period ── YearMonth
              ├── Publication
              ├── K（Professional か Personal）── Work（Personal のみ、1 つまで）
              └── Set<TechnologyId> ┄┄┄> Technology ──┬── TechnologyId
@@ -219,15 +228,17 @@ Project<K> ──┬── ProjectId
 外から届いた形を、ドメインの型に変換する。失敗しうるものは `Result` を返す。
 
 ```
-periodFromDates    : NaiveDate -> Option<NaiveDate> -> Result<Period, PeriodError>
+yearMonthNew       : Int -> Int -> Result<YearMonth, YearMonthError>
+periodFromDates    : YearMonth -> Option<YearMonth> -> Result<Period, PeriodError>
 projectIdFrom      : Ulid -> ProjectId
 technologyIdFrom   : Ulid -> TechnologyId
 ```
 
-- `periodFromDates` は、終了日が無ければ `Ongoing`、あれば `Past` を返す。
-  終了日が開始日より前なら `EndBeforeStart` で失敗する
+- `yearMonthNew` は、月が 1〜12 でなければ `MonthOutOfRange` で失敗する
+- `periodFromDates` は、終了月が無ければ `Ongoing`、あれば `Past` を返す。
+  終了月が開始月より前なら `EndBeforeStart` で失敗する
 - 種類は別システムのデータをそのまま使うので、期間から種類を導く関数は持たない
-- コードでは `Period::from_dates`、`From<Ulid> for ProjectId`、`From<Ulid> for TechnologyId`
+- コードでは `YearMonth::new`、`Period::from_dates`、`From<Ulid> for ProjectId`、`From<Ulid> for TechnologyId`
 
 ### 案件の状態を変える（このサイトが持つ項目だけ）
 
@@ -276,7 +287,7 @@ timeline   : List<AnyProject> -> List<TimelineItem>
 
 | 規則 | 守り方 |
 | --- | --- |
-| 継続中の期間は終了日を持たない | 型（`Ongoing` に `end` が無い） |
+| 継続中の期間は終了月を持たない | 型（`Ongoing` に `end` が無い） |
 | 1 つの案件に同じ技術は 2 回入らない | 型（`Set`） |
 | 案件 ID と技術 ID を取り違えない | 型（別の単純型） |
 | 案件の種類を期間から取り違えない | 型（種類を型の引数 `K` で明示して持つ） |
@@ -284,7 +295,8 @@ timeline   : List<AnyProject> -> List<TimelineItem>
 | 実務の案件は作品を持たない | 型（`Professional` にデータが無く、`addWork` は `Project<Personal>` だけが受け取る） |
 | 1 つの個人開発に作品は 1 つまで | 型（`Option<Work>`） |
 | 別システムから消えた案件は公開しない | 型（`Publication` の 1 つの状態）と関数（`publish`） |
-| 終了日は開始日より前にならない | 関数（`periodFromDates`）。`Period::Past { .. }` と直接書くと検査を通らない |
+| 月は 1〜12 | 関数（`yearMonthNew`）。`YearMonth` の中身は非公開なので、検査を通らずには作れない |
+| 終了月は開始月より前にならない | 関数（`periodFromDates`）。`Period::Past { .. }` と直接書くと検査を通らない |
 | 消せるのは別システムから消えた案件だけ | 関数（`ensureDeletable`）。保存を担う側が消す前に呼ぶ |
 | 別システムから消えた案件には作品を足せない | 関数（`addWork`） |
 | 技術の名前が重複しない | 未決。1 つの `Technology` では検査できない、一覧全体の規則 |
