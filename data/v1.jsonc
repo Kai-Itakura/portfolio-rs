@@ -2,10 +2,152 @@
 // 形は src/infrastructure/v1_data.rs の受け取り用の型を見ること。
 {
   // 技術。category: "Language" | "Framework" | "Database" | "Infrastructure" | "BusinessTool"
-  "technologies": [],
+  "technologies": [
+    { "id": "01M836R4TP0M7FNABRPJ0G6V9S", "name": "Go", "category": "Language" },
+    { "id": "01M836R4TQ4XR9MBBFT2CQRM1S", "name": "TypeScript", "category": "Language" },
+    { "id": "01M836R4TRF2MEX6Q5ZSSVZVM8", "name": "JavaScript", "category": "Language" },
+    { "id": "01M836R4TS22VHNF7GYJ03P3KG", "name": "PHP", "category": "Language" },
+    { "id": "01M836R4TTDBJQ93N377PQSHY8", "name": "Python", "category": "Language" },
+    { "id": "01M836R4TV9NK00FAXQRCXWYPM", "name": "PowerShell", "category": "Language" },
+    { "id": "01M836R4TWWHJ87F52803N4TQC", "name": "HTML", "category": "Language" },
+    { "id": "01M836R4TXRMYM27K86M2DXKKE", "name": "CSS", "category": "Language" },
+    { "id": "01M836R4TYJVCG01DJEHPC0VXB", "name": "Sass", "category": "Language" },
+    { "id": "01M836R4TZ5VE1VFQAC2BGRFCS", "name": "React", "category": "Framework" },
+    { "id": "01M836R4V0DXB1VD18H5445QHK", "name": "React Router v7", "category": "Framework" },
+    { "id": "01M836R4V14THXVH8A7R9CRVQV", "name": "Next.js", "category": "Framework" },
+    { "id": "01M836R4V206PT48JHENJAB4WA", "name": "Node.js", "category": "Framework" },
+    { "id": "01M836R4V3EKXD1NPBPMDWZBMD", "name": "Tailwind CSS", "category": "Framework" },
+    { "id": "01M836R4V44S9ANBE8SNMMV4B9", "name": "Symfony", "category": "Framework" },
+    { "id": "01M836R4V5ZQRN5QSPVSWV8VBF", "name": "Twig", "category": "Framework" },
+    { "id": "01M836R4V6B8HNPPVKHC16CF48", "name": "Smarty", "category": "Framework" },
+    { "id": "01M836R4V7X73WVJZR2QVYK64M", "name": "EC-CUBE", "category": "Framework" },
+    { "id": "01M836R4V884EG65QG2VDPXN3C", "name": "MySQL", "category": "Database" },
+    { "id": "01M836R4V9K7W0YN7J1XQBB7GE", "name": "Docker", "category": "Infrastructure" },
+    { "id": "01M836R4VAD8VETE8HQTBZQNTH", "name": "Kubernetes", "category": "Infrastructure" },
+    { "id": "01M836R4VBPYENG5JD07KNE6HG", "name": "AWS", "category": "Infrastructure" },
+    { "id": "01M836R4VC8WDXXHK5RCTZ6FKZ", "name": "GitHub", "category": "Infrastructure" },
+    { "id": "01M836R4VDZC1A3P1HNTRNGXA8", "name": "GitHub Actions", "category": "Infrastructure" },
+    { "id": "01M836R4VE7AG62VCX3BBHBFKG", "name": "GitHub Copilot", "category": "Infrastructure" },
+    { "id": "01M836R4VFQ191X4R8TEKAE1HS", "name": "Sourcetree", "category": "Infrastructure" },
+    { "id": "01M836R4VGH15QNV2R1RQRRVVZ", "name": "ChatGPT", "category": "Infrastructure" },
+    { "id": "01M836R4VHPTZGJA60FXVA2XSH", "name": "microCMS", "category": "Infrastructure" },
+    { "id": "01M836R4VJ8HVMWP9Z84B1KX91", "name": "MakeShop", "category": "Infrastructure" },
+    { "id": "01M836R4VKG46CVV5S79S4TPGD", "name": "Jira", "category": "BusinessTool" },
+    { "id": "01M836R4VMV2FFNVHFFP8RBEZ1", "name": "Backlog", "category": "BusinessTool" },
+    { "id": "01M836R4VNZVWQGHGK9V3YWCAC", "name": "Slack", "category": "BusinessTool" },
+    { "id": "01M836R4VP041CP9YEFA14V3RR", "name": "FigJam", "category": "BusinessTool" }
+  ],
 
   // 案件。kind: "professional" | "personal"
   // publication: "published" | "unpublished" | "removedUpstream"
-  // period.end を省くと継続中。work は個人開発だけが持てる。
-  "projects": []
+  // period は YYYY-MM。period.end を省くと継続中。work は個人開発だけが持てる。
+  "projects": [
+    {
+      "id": "01M836R4VQKRW66JKXY3Z0TWRD",
+      "kind": "professional",
+      "title": "工場生産管理システム開発",
+      "description": "【チームでの役割】\n7人のチームで2つに別れモブ作業を行う際のリーダーを担っていた。\n【実績／取り組み】\nドメインエキスパートの要件がなかなか固まらない中、リリースは半年ほど後ろ倒しになり、これ以上遅れることはできない状況だった。チームとしては要件が決まり次第スピード感を持ってリリースまで持っていく必要があった。そこで最小限のプロダクトをユーザーに触ってもらい、本仕様が決まり次第すぐにリリースできるよう変更可能性を高める設計にし、そのためにチームメンバーの理解度を底上げできるよう取り組んでいる途中。\n\n担当フェーズ：要件定義、基本設計、詳細設計、API実装、画面実装、テストコード作成\n環境：【OS】Windows11（WSL2 + Ubuntu）【言語/FW】Go、TypeScript、React、React Router v7【ツール・他】Docker、Kubernetes、AWS、FigJam、Jira\n規模：エンジニア：30名以上のうち7名が同チーム、モブは３，４人に分かれそれぞれのモブチームで実装",
+      "period": { "start": "2026-01" },
+      "techStack": [
+        "01M836R4TP0M7FNABRPJ0G6V9S", // Go
+        "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
+        "01M836R4TZ5VE1VFQAC2BGRFCS", // React
+        "01M836R4V0DXB1VD18H5445QHK", // React Router v7
+        "01M836R4V9K7W0YN7J1XQBB7GE", // Docker
+        "01M836R4VAD8VETE8HQTBZQNTH", // Kubernetes
+        "01M836R4VBPYENG5JD07KNE6HG", // AWS
+        "01M836R4VP041CP9YEFA14V3RR", // FigJam
+        "01M836R4VKG46CVV5S79S4TPGD" // Jira
+      ],
+      "publication": "published"
+    },
+    {
+      "id": "01M836R4VR9PM23J01HMFN9XBW",
+      "kind": "professional",
+      "title": "自社サイトのリプレイス",
+      "description": "【担当業務】\n・共通コンポーネントの実装\n【実績／取り組み】\n他のエンジニアと相談しながら、将来の変更に耐えれるように設計しました。また、実装担当箇所以外の部分のコードレビューも行った。\n\n担当フェーズ：詳細設計、実装\n環境：【OS】Windows11（WSL2 + Ubuntu）【言語/FW】TypeScript、Sass、React、React Router v7【ツール・他】Docker、microCMS\n規模：フロント：5名",
+      "period": { "start": "2025-08", "end": "2025-09" },
+      "techStack": [
+        "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
+        "01M836R4TYJVCG01DJEHPC0VXB", // Sass
+        "01M836R4TZ5VE1VFQAC2BGRFCS", // React
+        "01M836R4V0DXB1VD18H5445QHK", // React Router v7
+        "01M836R4V9K7W0YN7J1XQBB7GE", // Docker
+        "01M836R4VHPTZGJA60FXVA2XSH" // microCMS
+      ],
+      "publication": "published"
+    },
+    {
+      "id": "01M836R4VS2HPGSRP1VDJ4XVK0",
+      "kind": "professional",
+      "title": "電子機器製造業界／toB向けECサイトのリプレイス",
+      "description": "【担当業務】\n・先方との打ち合わせや仕様の確認（Microsoft Teams、Backlog）\n・進行管理\n・フロントの環境構築\n・フロント詳細設計\n・画面の実装\n【実績／取り組み】\nフロントエンドエンジニア兼プロジェクトリーダーとして、EC-CUBEを用いた開発を担当した。デフォルトのフロント環境が不十分だったため、Docker・TypeScript・Tailwind CSSなどを導入して開発効率を改善した。\nまた、複雑なカテゴリ周りのドメイン知識に対応するため、型を活用して不整合が生じない堅牢な実装をするように意識した。\nリーダーとしては、マネージャーとのスケジュール調整、顧客との仕様すり合わせ、デザイナーやバックエンドとの認識共有を実施。さらに、自分が抜けても困らないよう設計方針やフロント環境のドキュメントも整備した。\n\n担当フェーズ：技術選定、詳細設計、実装\n環境：【OS】Windows11（WSL2 + Ubuntu）【言語/FW】TypeScript、Node.js、Tailwind CSS、PHP（Symfony）、Twig【DB】MySQL【ツール・他】AWS、GitHub、GitHub Copilot、Docker、EC-CUBE、Backlog\n規模：マネージャー：1名、デザイナー：1名、フロント：1名、バックエンド：2名",
+      "period": { "start": "2025-03", "end": "2025-09" },
+      "techStack": [
+        "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
+        "01M836R4V206PT48JHENJAB4WA", // Node.js
+        "01M836R4V3EKXD1NPBPMDWZBMD", // Tailwind CSS
+        "01M836R4TS22VHNF7GYJ03P3KG", // PHP
+        "01M836R4V44S9ANBE8SNMMV4B9", // Symfony
+        "01M836R4V5ZQRN5QSPVSWV8VBF", // Twig
+        "01M836R4V884EG65QG2VDPXN3C", // MySQL
+        "01M836R4VBPYENG5JD07KNE6HG", // AWS
+        "01M836R4VC8WDXXHK5RCTZ6FKZ", // GitHub
+        "01M836R4VE7AG62VCX3BBHBFKG", // GitHub Copilot
+        "01M836R4V9K7W0YN7J1XQBB7GE", // Docker
+        "01M836R4V7X73WVJZR2QVYK64M", // EC-CUBE
+        "01M836R4VMV2FFNVHFFP8RBEZ1" // Backlog
+      ],
+      "publication": "published"
+    },
+    {
+      "id": "01M836R4VT87K89THVBHFED3QS",
+      "kind": "professional",
+      "title": "教育系出版業界／デジタル教科書令和5年度版・新機能開発",
+      "description": "【担当業務】\n・新機能開発\n・機能追加（リファクタリング）\n・作業効率化のための自動化プログラム作成\n・先方(30~40代のリーダークラス)との打ち合わせや仕様の確認（SlackやBacklog、zoom）\n・社内の進行管理や作業の振り分け\n【実績／取り組み】\nTypeScriptの実務経験はほぼなかったが、業務外などでもキャッチアップして新機能の体験版をリリースした。その成果が評価され、製品版開発ではサブリーダーとしてコードレビューやタスク振り分け、顧客折衝を担当した。\nこの案件は体験版と製品版の二つのフェーズがあり、「他社が書いたバグの多い前年度版コード」「大量の手作業」「TypeScript経験者の不足」という課題があった。\nまず、手作業の多さでリファクタリングが進まない状況を改善するため自動化スクリプトを作成し、本来の開発作業に集中できる環境を整備した。\n体験版で得た知識を活かし、新規メンバーにも方針を指示することでチーム全体の開発速度も向上した。\nその結果、予定より早くテストに入り、無事にリリースすることができた。\n\n担当フェーズ：詳細設計、実装、単体テスト、総合テスト、受け入れテスト\n環境：【OS】Windows11【言語/FW】TypeScript、Node.js、Python、PowerShell【ツール・他】Backlog、Slack、Sourcetree、ChatGPT\n規模：ディレクター：2名、サブリーダー：2名、フロント：10名",
+      "period": { "start": "2023-11", "end": "2025-02" },
+      "techStack": [
+        "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
+        "01M836R4V206PT48JHENJAB4WA", // Node.js
+        "01M836R4TTDBJQ93N377PQSHY8", // Python
+        "01M836R4TV9NK00FAXQRCXWYPM", // PowerShell
+        "01M836R4VMV2FFNVHFFP8RBEZ1", // Backlog
+        "01M836R4VNZVWQGHGK9V3YWCAC", // Slack
+        "01M836R4VFQ191X4R8TEKAE1HS", // Sourcetree
+        "01M836R4VGH15QNV2R1RQRRVVZ" // ChatGPT
+      ],
+      "publication": "published"
+    },
+    {
+      "id": "01M836R4VVK7TDFBXD5QSQD8CZ",
+      "kind": "professional",
+      "title": "食品業界／toC向けECサイトのデザイン改修と新規ページ作成",
+      "description": "【担当業務】\nデザイン改修と新規ページの作成\n【実績／取り組み】\nMakeShopという技術制限のあるEC構築サービスを使用していたため、顧客要望やデザインが実現可能かを調査しつつ実装を進めた。また、顧客からの戻しが多かったため、不要なコードを残さないよう丁寧に修正・実装を行った。\n\n担当フェーズ：実装、総合テスト、受け入れテスト\n環境：【OS】Windows10【言語/FW】JavaScript、HTML、CSS、Smarty【ツール・他】MakeShop\n規模：ディレクター：1名、デザイナー：1名、フロント：1名",
+      "period": { "start": "2023-08", "end": "2023-10" },
+      "techStack": [
+        "01M836R4TRF2MEX6Q5ZSSVZVM8", // JavaScript
+        "01M836R4TWWHJ87F52803N4TQC", // HTML
+        "01M836R4TXRMYM27K86M2DXKKE", // CSS
+        "01M836R4V6B8HNPPVKHC16CF48", // Smarty
+        "01M836R4VJ8HVMWP9Z84B1KX91" // MakeShop
+      ],
+      "publication": "published"
+    },
+    {
+      "id": "01M836R4VWV1AYQBKSG6WZ07FF",
+      "kind": "professional",
+      "title": "エンターテイメント業界／Webサイトのコンテンツ編集、レイアウト調整",
+      "description": "【担当業務】\nWebサイト内のテキストの修正や、CSSによるレイアウトの調整\n【実績／取り組み】\nテスト環境、本番環境の運用方法が異なっていたため、環境を壊さないように細心の注意を払った。\n\n担当フェーズ：運用、保守\n環境：【OS】Windows10【言語/FW】TypeScript、Next.js、Sass、CSS【ツール・他】AWS（CloudFront）、GitHub Actions\n規模：1名",
+      "period": { "start": "2023-07", "end": "2023-07" },
+      "techStack": [
+        "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
+        "01M836R4V14THXVH8A7R9CRVQV", // Next.js
+        "01M836R4TYJVCG01DJEHPC0VXB", // Sass
+        "01M836R4TXRMYM27K86M2DXKKE", // CSS
+        "01M836R4VBPYENG5JD07KNE6HG", // AWS
+        "01M836R4VDZC1A3P1HNTRNGXA8" // GitHub Actions
+      ],
+      "publication": "published"
+    }
+  ]
 }
