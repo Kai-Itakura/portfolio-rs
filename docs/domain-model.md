@@ -63,7 +63,11 @@ data ImageKey     = String
 ```
 data YearMonth =
     year: Int
-    AND month: Int   // 1〜12
+    AND month: Month
+
+data Month =
+    January OR February OR March OR April OR May OR June
+    OR July OR August OR September OR October OR November OR December
 
 data Period =
     Past
@@ -186,9 +190,6 @@ data Technology =
 ### エラー
 
 ```
-data YearMonthError =
-    MonthOutOfRange
-
 data PeriodError =
     EndBeforeStart
 
@@ -228,17 +229,15 @@ Project<K> ──┬── ProjectId
 外から届いた形を、ドメインの型に変換する。失敗しうるものは `Result` を返す。
 
 ```
-yearMonthNew       : Int -> Int -> Result<YearMonth, YearMonthError>
 periodFromDates    : YearMonth -> Option<YearMonth> -> Result<Period, PeriodError>
 projectIdFrom      : Ulid -> ProjectId
 technologyIdFrom   : Ulid -> TechnologyId
 ```
 
-- `yearMonthNew` は、月が 1〜12 でなければ `MonthOutOfRange` で失敗する
 - `periodFromDates` は、終了月が無ければ `Ongoing`、あれば `Past` を返す。
   終了月が開始月より前なら `EndBeforeStart` で失敗する
 - 種類は別システムのデータをそのまま使うので、期間から種類を導く関数は持たない
-- コードでは `YearMonth::new`、`Period::from_dates`、`From<Ulid> for ProjectId`、`From<Ulid> for TechnologyId`
+- コードでは `Period::from_dates`、`From<Ulid> for ProjectId`、`From<Ulid> for TechnologyId`
 
 ### 案件の状態を変える（このサイトが持つ項目だけ）
 
@@ -295,7 +294,7 @@ timeline   : List<AnyProject> -> List<TimelineItem>
 | 実務の案件は作品を持たない | 型（`Professional` にデータが無く、`addWork` は `Project<Personal>` だけが受け取る） |
 | 1 つの個人開発に作品は 1 つまで | 型（`Option<Work>`） |
 | 別システムから消えた案件は公開しない | 型（`Publication` の 1 つの状態）と関数（`publish`） |
-| 月は 1〜12 | 関数（`yearMonthNew`）。`YearMonth` の中身は非公開なので、検査を通らずには作れない |
+| 月は 1 月〜12 月のどれか | 型（`Month` は 12 個の値だけを持つ。コードでは `chrono::Month`） |
 | 終了月は開始月より前にならない | 関数（`periodFromDates`）。`Period::Past { .. }` と直接書くと検査を通らない |
 | 消せるのは別システムから消えた案件だけ | 関数（`ensureDeletable`）。保存を担う側が消す前に呼ぶ |
 | 別システムから消えた案件には作品を足せない | 関数（`addWork`） |

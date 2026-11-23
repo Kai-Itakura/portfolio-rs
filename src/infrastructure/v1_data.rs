@@ -7,6 +7,7 @@
 use std::collections::HashSet;
 use std::fmt;
 
+use chrono::Month;
 use serde::Deserialize;
 use ulid::Ulid;
 
@@ -282,6 +283,7 @@ fn year_month(text: &str) -> Result<YearMonth, LoadError> {
         return Err(invalid());
     }
     let year = year.parse().map_err(|_| invalid())?;
-    let month = month.parse().map_err(|_| invalid())?;
-    YearMonth::new(year, month).map_err(|_| invalid())
+    let month = month.parse::<u8>().map_err(|_| invalid())?;
+    let month = Month::try_from(month).map_err(|_| invalid())?;
+    Ok(YearMonth { year, month })
 }
