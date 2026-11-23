@@ -76,6 +76,7 @@ cargo run             # サーバーを起動（既定は 127.0.0.1:3000）
 topcoat dev           # 開発サーバー（ビルド + アセットバンドル + 監視 + ライブリロード）
 topcoat fmt           # view! マクロを含めて整形
 cargo clippy --all-targets -- -D warnings
+cargo run -p lint     # このリポジトリ独自の静的解析（lint/）。CI でも走る
 ```
 
 CLI は `cargo install topcoat-cli` で入れる。

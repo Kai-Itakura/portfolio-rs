@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: project-state-function-tests
+expected_outcome: |
+  project.rs の末尾の tests モジュールに、各関数の成功とエラーの種類ごとの失敗、unpublish の各状態、add_work の検査の順番を確かめるテストがあり、テストの結果と網羅率の表が報告されている。

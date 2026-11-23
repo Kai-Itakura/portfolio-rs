@@ -28,7 +28,8 @@ portfolio-rs/
 ├── Dockerfile                # Cloud Run 向け multi-stage
 ├── .gitignore                # /target の行は必須（下記の理由参照）
 ├── .dockerignore             # .gitignore を除外しないこと
-├── .github/workflows/ci.yml
+├── .github/workflows/ci.yml  # lint/ の静的解析を走らせる
+├── lint/                     # このリポジトリ独自の静的解析（cargo run -p lint）
 ├── docs/
 ├── app.css                   # Tailwind の入力（@theme のトークン）
 ├── src/
