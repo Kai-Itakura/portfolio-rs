@@ -8,6 +8,7 @@ pub trait ProjectKind: sealed::Sealed {}
 pub struct Professional;
 
 /// 業務の外で取り組んだ案件。作品を 1 つまで持てる。
+#[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
 pub struct Personal {
     pub work: Option<Work>,
 }

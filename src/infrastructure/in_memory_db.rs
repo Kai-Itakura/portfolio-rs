@@ -9,6 +9,7 @@ use crate::infrastructure::v1_data::{self, LoadError};
 
 /// v1 のデータ置き場。本物の DB に替えるまで、案件と技術をメモリ上に持つ。
 /// ルーターに `.app_context(...)` で登録して、リポジトリとクエリサービスから使う。
+#[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
 pub struct InMemoryDb {
     pub projects: RwLock<HashMap<ProjectId, AnyProject>>,
     /// 技術は別システムから届くだけで、このサイトは書き換えないのでロックを持たない。

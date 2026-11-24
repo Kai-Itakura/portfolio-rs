@@ -18,6 +18,7 @@ use work::Work;
 use crate::domain::technology::technology_id::TechnologyId;
 
 /// 1 件の案件。種類 `K` は `Professional` か `Personal` のどちらか。
+#[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
 pub struct Project<K: ProjectKind> {
     pub id: ProjectId,
     pub title: String,
@@ -35,16 +36,19 @@ pub enum AnyProject {
 }
 
 #[derive(Debug)]
+#[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
 pub enum PublishError {
     RemovedUpstream,
 }
 
 #[derive(Debug)]
+#[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
 pub enum DeleteError {
     NotRemovedUpstream,
 }
 
 #[derive(Debug)]
+#[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
 pub enum AddWorkError {
     RemovedUpstream,
     AlreadyHasWork,
@@ -71,6 +75,7 @@ impl<K: ProjectKind> Project<K> {
         }
     }
 
+    #[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
     pub fn publish(self) -> Result<Self, PublishError> {
         if self.publication == Publication::RemovedUpstream {
             return Err(PublishError::RemovedUpstream);
@@ -81,6 +86,7 @@ impl<K: ProjectKind> Project<K> {
         })
     }
 
+    #[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
     pub fn unpublish(self) -> Self {
         let publication = match self.publication {
             Publication::Published => Publication::Unpublished,
@@ -93,6 +99,7 @@ impl<K: ProjectKind> Project<K> {
     }
 
     /// 別システムから消えた案件に印を付ける。案件と作品は消さずに残し、公開もしない。
+    #[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
     pub fn mark_removed_upstream(self) -> Self {
         Self {
             publication: Publication::RemovedUpstream,
@@ -101,6 +108,7 @@ impl<K: ProjectKind> Project<K> {
     }
 
     /// このサイトから消してよいかを確かめる。消してよいのは、別システムから消えた案件だけ。
+    #[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
     pub fn ensure_deletable(&self) -> Result<(), DeleteError> {
         if self.publication != Publication::RemovedUpstream {
             return Err(DeleteError::NotRemovedUpstream);
@@ -112,6 +120,7 @@ impl<K: ProjectKind> Project<K> {
 impl Project<Personal> {
     /// 作品を足す。公開していない個人開発にも足せる（公開するまで作品は見えない）。
     /// 別システムから消えた案件には足せない。実務の案件にはこのメソッドが無い。
+    #[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
     pub fn add_work(self, work: Work) -> Result<Self, AddWorkError> {
         if self.publication == Publication::RemovedUpstream {
             return Err(AddWorkError::RemovedUpstream);

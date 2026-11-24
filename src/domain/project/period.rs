@@ -1,5 +1,6 @@
 use crate::domain::project::year_month::YearMonth;
 
+#[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
 pub enum Period {
     Past { start: YearMonth, end: YearMonth },
     Ongoing { start: YearMonth },

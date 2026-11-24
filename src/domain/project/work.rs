@@ -3,6 +3,7 @@ use crate::domain::project::work_id::WorkId;
 
 /// 個人開発を見せるための作品。技術スタックは持たず、個人開発のものをそのまま見せる。
 /// 期間と言語も個人開発から導くので持たない。
+#[expect(dead_code, reason = "ページとクエリサービスから使うまでの間")]
 pub struct Work {
     pub id: WorkId,
     pub title: String,
