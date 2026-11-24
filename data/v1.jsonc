@@ -46,7 +46,7 @@
       "id": "01M836R4VQKRW66JKXY3Z0TWRD",
       "kind": "professional",
       "title": "工場生産管理システム開発",
-      "description": "7 名チームでモブプログラミングのリーダー。要件が揺れる中、変更しやすい設計とメンバーの理解の底上げに取り組む",
+      "description": "工場の生産を管理する Web システムの開発。7 名チームでモブプログラミングのリーダーを務め、要件が揺れる中でも変更しやすい設計に取り組む",
       "period": { "start": "2026-01" },
       "techStack": [
         "01M836R4TP0M7FNABRPJ0G6V9S", // Go
@@ -65,7 +65,7 @@
       "id": "01M836R4VR9PM23J01HMFN9XBW",
       "kind": "professional",
       "title": "自社サイトのリプレイス",
-      "description": "共通コンポーネントを担当。将来の変更に耐える設計を相談しながら進め、担当外のコードレビューも行う",
+      "description": "自社サイトを React Router v7 と microCMS で作り直す案件。共通コンポーネントを担当し、将来の変更に耐える設計と担当外のコードレビューも行う",
       "period": { "start": "2025-08", "end": "2025-09" },
       "techStack": [
         "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
@@ -81,7 +81,7 @@
       "id": "01M836R4VS2HPGSRP1VDJ4XVK0",
       "kind": "professional",
       "title": "電子機器製造業界／toB向けECサイトのリプレイス",
-      "description": "フロントエンド兼プロジェクトリーダー。Docker / TypeScript / Tailwind CSS を導入し、EC-CUBE の開発環境を刷新",
+      "description": "電子機器製造業の企業向けに、toB の EC サイトを EC-CUBE で作り直す案件。フロントエンド兼プロジェクトリーダーとして Docker / TypeScript / Tailwind CSS を導入し、開発環境を刷新",
       "period": { "start": "2025-03", "end": "2025-09" },
       "techStack": [
         "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
@@ -104,7 +104,7 @@
       "id": "01M836R4VT87K89THVBHFED3QS",
       "kind": "professional",
       "title": "教育系出版業界／デジタル教科書令和5年度版・新機能開発",
-      "description": "10 名規模のフロントチームでサブリーダー。手作業を自動化スクリプトに置き換え、予定より早くテストへ進めた",
+      "description": "教育系出版社のデジタル教科書（令和 5 年度版）に新機能を足す案件。10 名規模のフロントチームでサブリーダーを務め、手作業を自動化して予定より早くテストへ進めた",
       "period": { "start": "2023-11", "end": "2025-02" },
       "techStack": [
         "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
@@ -122,7 +122,7 @@
       "id": "01M836R4VVK7TDFBXD5QSQD8CZ",
       "kind": "professional",
       "title": "食品業界／toC向けECサイトのデザイン改修と新規ページ作成",
-      "description": "制約の多い MakeShop 上で、要望の実現可否を調べながらデザイン改修と新規ページを実装",
+      "description": "食品業界の企業の toC 向け EC サイトの改修。制約の多い MakeShop 上で、要望の実現可否を調べながらデザイン改修と新規ページを実装",
       "period": { "start": "2023-08", "end": "2023-10" },
       "techStack": [
         "01M836R4TRF2MEX6Q5ZSSVZVM8", // JavaScript
@@ -137,7 +137,7 @@
       "id": "01M836R4VWV1AYQBKSG6WZ07FF",
       "kind": "professional",
       "title": "エンターテイメント業界／Webサイトのコンテンツ編集、レイアウト調整",
-      "description": "テキストの修正と CSS によるレイアウト調整。テスト環境と本番環境で異なる運用手順を守って作業",
+      "description": "エンターテイメント業界の Web サイトの運用・保守。テキストの修正と CSS によるレイアウト調整を、環境ごとに異なる運用手順を守って行う",
       "period": { "start": "2023-07", "end": "2023-07" },
       "techStack": [
         "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
