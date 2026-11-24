@@ -2,8 +2,8 @@ default:
     @just --list
 
 fmt:
-    cargo fmt --all --check
-    topcoat fmt --check src lint
+    cargo fmt --all
+    topcoat fmt src lint
 
 clippy:
     cargo clippy --workspace --all-targets -- -D warnings
