@@ -21,5 +21,4 @@ cov:
 
 setup:
     rustup toolchain install nightly --profile minimal -c llvm-tools-preview
-    cargo install topcoat-cli --version 0.10.0 --locked
-    cargo install cargo-llvm-cov --locked
+    cargo install topcoat-cli@0.10.0 cargo-llvm-cov --locked
