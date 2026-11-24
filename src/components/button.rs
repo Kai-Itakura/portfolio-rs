@@ -35,9 +35,6 @@ impl ButtonSize {
     }
 }
 
-pub fn button_variants(
-    variant: ButtonVariant,
-    size: ButtonSize,
-) -> Class<impl ClassEntries> {
+pub fn button_variants(variant: ButtonVariant, size: ButtonSize) -> Class<impl ClassEntries> {
     class!(BASE_CLASS, variant.classes(), size.classes())
 }
