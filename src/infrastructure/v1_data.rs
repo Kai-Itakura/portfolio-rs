@@ -106,8 +106,6 @@ fn parse(text: &str) -> Result<V1Data, LoadError> {
     })
 }
 
-// ここから下は JSONC の形をそのまま受け取る型。ドメインの外にだけ置く。
-
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct FileData {
@@ -177,8 +175,6 @@ struct WorkData {
     card_image: String,
     mock_up: String,
 }
-
-// ここから下は、受け取った値をドメインの型に変換する関数。
 
 fn convert_technology(data: TechnologyData) -> Result<Technology, LoadError> {
     Ok(Technology {
