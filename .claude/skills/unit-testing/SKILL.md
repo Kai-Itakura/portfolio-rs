@@ -63,7 +63,7 @@ fn publish_fails_when_removed_upstream() {
 - 成功した値の中身を確かめたいときは `let Ok(value) = result else { panic!("expected Ok, got an error") };` で取り出す
 - テスト用の値を作る補助関数（例: `fn professional_project(publication: Publication) -> Project<Professional>`）は、
   `tests` モジュールの中に置く。どこまで共有するかはその都度判断し、テストを読んだだけで入力が分かる程度にとどめる
-- 固定の ULID や日付は、補助関数の中で作ってよい（`NaiveDate::from_ymd_opt(2026, 7, 1).unwrap()` など）。
+- 固定の ULID や年月は、補助関数の中で作ってよい（`YearMonth { year: 2026, month: Month::July }` など）。
   テストの中の `unwrap()` は、失敗したらテストが落ちるだけなので使ってよい
 
 ## どのテストを書くか: 条件網羅（C2）
