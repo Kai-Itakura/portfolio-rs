@@ -77,9 +77,11 @@ topcoat dev           # 開発サーバー（ビルド + アセットバンド�
 topcoat fmt           # view! マクロを含めて整形
 cargo clippy --all-targets -- -D warnings
 cargo run -p lint     # このリポジトリ独自の静的解析（lint/）。CI でも走る
+just check            # fmt（整形して書き換える）→ clippy → test → lint をまとめて走らせる（justfile）
+just cov              # 網羅率（nightly と cargo-llvm-cov が要る）
 ```
 
-CLI は `cargo install topcoat-cli` で入れる。
+CLI は `cargo install topcoat-cli`、just は `cargo install just` で入れる。
 
 ## 最低限の注意点（詳細は docs/topcoat-notes.md）
 

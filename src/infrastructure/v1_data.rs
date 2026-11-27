@@ -7,7 +7,7 @@
 use std::collections::HashSet;
 use std::fmt;
 
-use chrono::NaiveDate;
+use chrono::Month;
 use serde::Deserialize;
 use ulid::Ulid;
 
@@ -18,6 +18,7 @@ use crate::domain::project::project_kind::{Personal, Professional};
 use crate::domain::project::publication::Publication;
 use crate::domain::project::work::Work;
 use crate::domain::project::work_id::WorkId;
+use crate::domain::project::year_month::YearMonth;
 use crate::domain::project::{AnyProject, Project};
 use crate::domain::technology::Technology;
 use crate::domain::technology::category::Category;
@@ -39,7 +40,7 @@ pub struct V1Data {
 pub enum LoadError {
     Parse(String),
     InvalidId(String),
-    InvalidDate(String),
+    InvalidYearMonth(String),
     InvalidPeriod { project: String, error: PeriodError },
     UnknownTechnology { project: String, technology: String },
     WorkOnProfessionalProject(String),
@@ -51,7 +52,9 @@ impl fmt::Display for LoadError {
         match self {
             Self::Parse(message) => write!(f, "cannot parse the file: {message}"),
             Self::InvalidId(id) => write!(f, "invalid ULID: {id}"),
-            Self::InvalidDate(date) => write!(f, "invalid date (expected YYYY-MM-DD): {date}"),
+            Self::InvalidYearMonth(text) => {
+                write!(f, "invalid year and month (expected YYYY-MM): {text}")
+            }
             Self::InvalidPeriod { project, error } => {
                 write!(f, "invalid period in project {project}: {error:?}")
             }
@@ -85,7 +88,7 @@ fn parse(text: &str) -> Result<V1Data, LoadError> {
     let technologies = file
         .technologies
         .into_iter()
-        .map(technology)
+        .map(convert_technology)
         .collect::<Result<Vec<_>, _>>()?;
     let known: HashSet<TechnologyId> = technologies
         .iter()
@@ -94,7 +97,7 @@ fn parse(text: &str) -> Result<V1Data, LoadError> {
     let projects = file
         .projects
         .into_iter()
-        .map(|data| project(data, &known))
+        .map(|data| convert_project(data, &known))
         .collect::<Result<Vec<_>, _>>()?;
 
     Ok(V1Data {
@@ -177,9 +180,9 @@ struct WorkData {
 
 // ここから下は、受け取った値をドメインの型に変換する関数。
 
-fn technology(data: TechnologyData) -> Result<Technology, LoadError> {
+fn convert_technology(data: TechnologyData) -> Result<Technology, LoadError> {
     Ok(Technology {
-        id: TechnologyId::from(ulid(&data.id)?),
+        id: TechnologyId::from(parse_ulid(&data.id)?),
         name: data.name,
         category: match data.category {
             CategoryData::Language => Category::Language,
@@ -191,11 +194,18 @@ fn technology(data: TechnologyData) -> Result<Technology, LoadError> {
     })
 }
 
-fn project(data: ProjectData, known: &HashSet<TechnologyId>) -> Result<AnyProject, LoadError> {
-    let id = ProjectId::from(ulid(&data.id)?);
+fn convert_project(
+    data: ProjectData,
+    known: &HashSet<TechnologyId>,
+) -> Result<AnyProject, LoadError> {
+    let id = ProjectId::from(parse_ulid(&data.id)?);
     let period = Period::from_dates(
-        date(&data.period.start)?,
-        data.period.end.as_deref().map(date).transpose()?,
+        parse_year_month(&data.period.start)?,
+        data.period
+            .end
+            .as_deref()
+            .map(parse_year_month)
+            .transpose()?,
     )
     .map_err(|error| LoadError::InvalidPeriod {
         project: data.id.clone(),
@@ -205,7 +215,7 @@ fn project(data: ProjectData, known: &HashSet<TechnologyId>) -> Result<AnyProjec
         .tech_stack
         .iter()
         .map(|technology| {
-            let technology_id = TechnologyId::from(ulid(technology)?);
+            let technology_id = TechnologyId::from(parse_ulid(technology)?);
             if known.contains(&technology_id) {
                 Ok(technology_id)
             } else {
@@ -238,7 +248,7 @@ fn project(data: ProjectData, known: &HashSet<TechnologyId>) -> Result<AnyProjec
             ))
         }
         KindData::Personal => {
-            let work = data.work.map(work).transpose()?;
+            let work = data.work.map(convert_work).transpose()?;
             AnyProject::Personal(Project::new(
                 id,
                 data.title,
@@ -252,14 +262,14 @@ fn project(data: ProjectData, known: &HashSet<TechnologyId>) -> Result<AnyProjec
     })
 }
 
-fn work(data: WorkData) -> Result<Work, LoadError> {
+fn convert_work(data: WorkData) -> Result<Work, LoadError> {
     let body = WORK_BODIES
         .iter()
         .find(|(id, _)| *id == data.id)
         .map(|(_, body)| *body)
         .ok_or_else(|| LoadError::MissingWorkBody(data.id.clone()))?;
     Ok(Work::new(
-        WorkId::from(ulid(&data.id)?),
+        WorkId::from(parse_ulid(&data.id)?),
         data.title,
         data.description,
         data.live_site,
@@ -269,11 +279,18 @@ fn work(data: WorkData) -> Result<Work, LoadError> {
     ))
 }
 
-fn ulid(text: &str) -> Result<Ulid, LoadError> {
+fn parse_ulid(text: &str) -> Result<Ulid, LoadError> {
     Ulid::from_string(text).map_err(|_| LoadError::InvalidId(text.to_string()))
 }
 
-fn date(text: &str) -> Result<NaiveDate, LoadError> {
-    text.parse()
-        .map_err(|_| LoadError::InvalidDate(text.to_string()))
+fn parse_year_month(text: &str) -> Result<YearMonth, LoadError> {
+    let invalid = || LoadError::InvalidYearMonth(text.to_string());
+    let (year, month) = text.split_once('-').ok_or_else(invalid)?;
+    if year.len() != 4 || month.len() != 2 {
+        return Err(invalid());
+    }
+    let year = year.parse().map_err(|_| invalid())?;
+    let month = month.parse::<u8>().map_err(|_| invalid())?;
+    let month = Month::try_from(month).map_err(|_| invalid())?;
+    Ok(YearMonth { year, month })
 }

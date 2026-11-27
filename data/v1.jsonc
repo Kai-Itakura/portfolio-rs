@@ -2,10 +2,152 @@
 // 形は src/infrastructure/v1_data.rs の受け取り用の型を見ること。
 {
   // 技術。category: "Language" | "Framework" | "Database" | "Infrastructure" | "BusinessTool"
-  "technologies": [],
+  "technologies": [
+    { "id": "01M836R4TP0M7FNABRPJ0G6V9S", "name": "Go", "category": "Language" },
+    { "id": "01M836R4TQ4XR9MBBFT2CQRM1S", "name": "TypeScript", "category": "Language" },
+    { "id": "01M836R4TRF2MEX6Q5ZSSVZVM8", "name": "JavaScript", "category": "Language" },
+    { "id": "01M836R4TS22VHNF7GYJ03P3KG", "name": "PHP", "category": "Language" },
+    { "id": "01M836R4TTDBJQ93N377PQSHY8", "name": "Python", "category": "Language" },
+    { "id": "01M836R4TV9NK00FAXQRCXWYPM", "name": "PowerShell", "category": "Language" },
+    { "id": "01M836R4TWWHJ87F52803N4TQC", "name": "HTML", "category": "Language" },
+    { "id": "01M836R4TXRMYM27K86M2DXKKE", "name": "CSS", "category": "Language" },
+    { "id": "01M836R4TYJVCG01DJEHPC0VXB", "name": "Sass", "category": "Language" },
+    { "id": "01M836R4TZ5VE1VFQAC2BGRFCS", "name": "React", "category": "Framework" },
+    { "id": "01M836R4V0DXB1VD18H5445QHK", "name": "React Router v7", "category": "Framework" },
+    { "id": "01M836R4V14THXVH8A7R9CRVQV", "name": "Next.js", "category": "Framework" },
+    { "id": "01M836R4V206PT48JHENJAB4WA", "name": "Node.js", "category": "Framework" },
+    { "id": "01M836R4V3EKXD1NPBPMDWZBMD", "name": "Tailwind CSS", "category": "Framework" },
+    { "id": "01M836R4V44S9ANBE8SNMMV4B9", "name": "Symfony", "category": "Framework" },
+    { "id": "01M836R4V5ZQRN5QSPVSWV8VBF", "name": "Twig", "category": "Framework" },
+    { "id": "01M836R4V6B8HNPPVKHC16CF48", "name": "Smarty", "category": "Framework" },
+    { "id": "01M836R4V7X73WVJZR2QVYK64M", "name": "EC-CUBE", "category": "Framework" },
+    { "id": "01M836R4V884EG65QG2VDPXN3C", "name": "MySQL", "category": "Database" },
+    { "id": "01M836R4V9K7W0YN7J1XQBB7GE", "name": "Docker", "category": "Infrastructure" },
+    { "id": "01M836R4VAD8VETE8HQTBZQNTH", "name": "Kubernetes", "category": "Infrastructure" },
+    { "id": "01M836R4VBPYENG5JD07KNE6HG", "name": "AWS", "category": "Infrastructure" },
+    { "id": "01M836R4VC8WDXXHK5RCTZ6FKZ", "name": "GitHub", "category": "Infrastructure" },
+    { "id": "01M836R4VDZC1A3P1HNTRNGXA8", "name": "GitHub Actions", "category": "Infrastructure" },
+    { "id": "01M836R4VE7AG62VCX3BBHBFKG", "name": "GitHub Copilot", "category": "Infrastructure" },
+    { "id": "01M836R4VFQ191X4R8TEKAE1HS", "name": "Sourcetree", "category": "Infrastructure" },
+    { "id": "01M836R4VGH15QNV2R1RQRRVVZ", "name": "ChatGPT", "category": "Infrastructure" },
+    { "id": "01M836R4VHPTZGJA60FXVA2XSH", "name": "microCMS", "category": "Infrastructure" },
+    { "id": "01M836R4VJ8HVMWP9Z84B1KX91", "name": "MakeShop", "category": "Infrastructure" },
+    { "id": "01M836R4VKG46CVV5S79S4TPGD", "name": "Jira", "category": "BusinessTool" },
+    { "id": "01M836R4VMV2FFNVHFFP8RBEZ1", "name": "Backlog", "category": "BusinessTool" },
+    { "id": "01M836R4VNZVWQGHGK9V3YWCAC", "name": "Slack", "category": "BusinessTool" },
+    { "id": "01M836R4VP041CP9YEFA14V3RR", "name": "FigJam", "category": "BusinessTool" }
+  ],
 
   // 案件。kind: "professional" | "personal"
   // publication: "published" | "unpublished" | "removedUpstream"
-  // period.end を省くと継続中。work は個人開発だけが持てる。
-  "projects": []
+  // period は YYYY-MM。period.end を省くと継続中。work は個人開発だけが持てる。
+  "projects": [
+    {
+      "id": "01M836R4VQKRW66JKXY3Z0TWRD",
+      "kind": "professional",
+      "title": "工場生産管理システム開発",
+      "description": "工場の生産を管理する Web システムの開発。7 名チームでモブプログラミングのリーダーを務め、要件が揺れる中でも変更しやすい設計に取り組む",
+      "period": { "start": "2026-01" },
+      "techStack": [
+        "01M836R4TP0M7FNABRPJ0G6V9S", // Go
+        "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
+        "01M836R4TZ5VE1VFQAC2BGRFCS", // React
+        "01M836R4V0DXB1VD18H5445QHK", // React Router v7
+        "01M836R4V9K7W0YN7J1XQBB7GE", // Docker
+        "01M836R4VAD8VETE8HQTBZQNTH", // Kubernetes
+        "01M836R4VBPYENG5JD07KNE6HG", // AWS
+        "01M836R4VP041CP9YEFA14V3RR", // FigJam
+        "01M836R4VKG46CVV5S79S4TPGD" // Jira
+      ],
+      "publication": "published"
+    },
+    {
+      "id": "01M836R4VR9PM23J01HMFN9XBW",
+      "kind": "professional",
+      "title": "自社サイトのリプレイス",
+      "description": "自社サイトを React Router v7 と microCMS で作り直す案件。共通コンポーネントを担当し、将来の変更に耐える設計と担当外のコードレビューも行う",
+      "period": { "start": "2025-08", "end": "2025-09" },
+      "techStack": [
+        "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
+        "01M836R4TYJVCG01DJEHPC0VXB", // Sass
+        "01M836R4TZ5VE1VFQAC2BGRFCS", // React
+        "01M836R4V0DXB1VD18H5445QHK", // React Router v7
+        "01M836R4V9K7W0YN7J1XQBB7GE", // Docker
+        "01M836R4VHPTZGJA60FXVA2XSH" // microCMS
+      ],
+      "publication": "published"
+    },
+    {
+      "id": "01M836R4VS2HPGSRP1VDJ4XVK0",
+      "kind": "professional",
+      "title": "電子機器製造業界／toB向けECサイトのリプレイス",
+      "description": "電子機器製造業の企業向けに、toB の EC サイトを EC-CUBE で作り直す案件。フロントエンド兼プロジェクトリーダーとして Docker / TypeScript / Tailwind CSS を導入し、開発環境を刷新",
+      "period": { "start": "2025-03", "end": "2025-09" },
+      "techStack": [
+        "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
+        "01M836R4V206PT48JHENJAB4WA", // Node.js
+        "01M836R4V3EKXD1NPBPMDWZBMD", // Tailwind CSS
+        "01M836R4TS22VHNF7GYJ03P3KG", // PHP
+        "01M836R4V44S9ANBE8SNMMV4B9", // Symfony
+        "01M836R4V5ZQRN5QSPVSWV8VBF", // Twig
+        "01M836R4V884EG65QG2VDPXN3C", // MySQL
+        "01M836R4VBPYENG5JD07KNE6HG", // AWS
+        "01M836R4VC8WDXXHK5RCTZ6FKZ", // GitHub
+        "01M836R4VE7AG62VCX3BBHBFKG", // GitHub Copilot
+        "01M836R4V9K7W0YN7J1XQBB7GE", // Docker
+        "01M836R4V7X73WVJZR2QVYK64M", // EC-CUBE
+        "01M836R4VMV2FFNVHFFP8RBEZ1" // Backlog
+      ],
+      "publication": "published"
+    },
+    {
+      "id": "01M836R4VT87K89THVBHFED3QS",
+      "kind": "professional",
+      "title": "教育系出版業界／デジタル教科書令和5年度版・新機能開発",
+      "description": "教育系出版社のデジタル教科書（令和 5 年度版）に新機能を足す案件。10 名規模のフロントチームでサブリーダーを務め、手作業を自動化して予定より早くテストへ進めた",
+      "period": { "start": "2023-11", "end": "2025-02" },
+      "techStack": [
+        "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
+        "01M836R4V206PT48JHENJAB4WA", // Node.js
+        "01M836R4TTDBJQ93N377PQSHY8", // Python
+        "01M836R4TV9NK00FAXQRCXWYPM", // PowerShell
+        "01M836R4VMV2FFNVHFFP8RBEZ1", // Backlog
+        "01M836R4VNZVWQGHGK9V3YWCAC", // Slack
+        "01M836R4VFQ191X4R8TEKAE1HS", // Sourcetree
+        "01M836R4VGH15QNV2R1RQRRVVZ" // ChatGPT
+      ],
+      "publication": "published"
+    },
+    {
+      "id": "01M836R4VVK7TDFBXD5QSQD8CZ",
+      "kind": "professional",
+      "title": "食品業界／toC向けECサイトのデザイン改修と新規ページ作成",
+      "description": "食品業界の企業の toC 向け EC サイトの改修。制約の多い MakeShop 上で、要望の実現可否を調べながらデザイン改修と新規ページを実装",
+      "period": { "start": "2023-08", "end": "2023-10" },
+      "techStack": [
+        "01M836R4TRF2MEX6Q5ZSSVZVM8", // JavaScript
+        "01M836R4TWWHJ87F52803N4TQC", // HTML
+        "01M836R4TXRMYM27K86M2DXKKE", // CSS
+        "01M836R4V6B8HNPPVKHC16CF48", // Smarty
+        "01M836R4VJ8HVMWP9Z84B1KX91" // MakeShop
+      ],
+      "publication": "published"
+    },
+    {
+      "id": "01M836R4VWV1AYQBKSG6WZ07FF",
+      "kind": "professional",
+      "title": "エンターテイメント業界／Webサイトのコンテンツ編集、レイアウト調整",
+      "description": "エンターテイメント業界の Web サイトの運用・保守。テキストの修正と CSS によるレイアウト調整を、環境ごとに異なる運用手順を守って行う",
+      "period": { "start": "2023-07", "end": "2023-07" },
+      "techStack": [
+        "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
+        "01M836R4V14THXVH8A7R9CRVQV", // Next.js
+        "01M836R4TYJVCG01DJEHPC0VXB", // Sass
+        "01M836R4TXRMYM27K86M2DXKKE", // CSS
+        "01M836R4VBPYENG5JD07KNE6HG", // AWS
+        "01M836R4VDZC1A3P1HNTRNGXA8" // GitHub Actions
+      ],
+      "publication": "published"
+    }
+  ]
 }
