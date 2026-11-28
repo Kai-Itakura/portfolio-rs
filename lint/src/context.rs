@@ -7,6 +7,7 @@ use crate::violation::Violation;
 pub struct Context<'a> {
     pub path: &'a Path,
     pub in_domain: bool,
+    pub in_query_service: bool,
     pub violations: Vec<Violation>,
 }
 

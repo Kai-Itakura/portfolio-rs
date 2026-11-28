@@ -34,6 +34,8 @@ fn check_file(rules: &[Box<dyn Rule>], root: &Path, path: &Path) -> Result<Vec<V
     let cx = Context {
         path: relative,
         in_domain: relative.starts_with("src/domain") || relative == Path::new("src/domain.rs"),
+        in_query_service: relative.starts_with("src/query_service")
+            || relative == Path::new("src/query_service.rs"),
         violations: Vec::new(),
     };
     let mut checker = Checker::new(rules, cx);
