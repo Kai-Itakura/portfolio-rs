@@ -38,7 +38,8 @@
         "01M836R4V0DXB1VD18H5445QHK", // React Router v7
         "01M836R4V9K7W0YN7J1XQBB7GE", // Docker
         "01M836R4VAD8VETE8HQTBZQNTH", // Kubernetes
-        "01M836R4VBPYENG5JD07KNE6HG" // AWS
+        "01M836R4VBPYENG5JD07KNE6HG", // AWS
+        "01M836R4VDZC1A3P1HNTRNGXA8" // GitHub Actions
       ],
       "publication": "published"
     },
