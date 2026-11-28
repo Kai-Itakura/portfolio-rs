@@ -2,6 +2,7 @@ mod checker;
 mod context;
 mod naming;
 mod rules;
+mod use_tree;
 mod violation;
 
 use std::fs;
@@ -27,6 +28,11 @@ fn rust_files(dir: &Path, files: &mut Vec<PathBuf>) -> std::io::Result<()> {
     Ok(())
 }
 
+fn in_module(relative: &Path, module: &str) -> bool {
+    relative.starts_with(Path::new("src").join(module))
+        || relative == Path::new("src").join(format!("{module}.rs"))
+}
+
 fn query_service_module(relative: &Path) -> Option<String> {
     if !relative.starts_with("src/query_service") || relative == Path::new("src/query_service.rs") {
         return None;
@@ -47,6 +53,7 @@ fn check_file(rules: &[Box<dyn Rule>], root: &Path, path: &Path) -> Result<Vec<V
         in_query_service: relative.starts_with("src/query_service")
             || relative == Path::new("src/query_service.rs"),
         query_service_module: query_service_module(relative),
+        in_application: in_module(relative, "application"),
         violations: Vec::new(),
     };
     let mut checker = Checker::new(rules, cx);
