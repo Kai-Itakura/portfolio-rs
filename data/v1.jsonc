@@ -6,36 +6,19 @@
     { "id": "01M836R4TP0M7FNABRPJ0G6V9S", "name": "Go", "category": "Language" },
     { "id": "01M836R4TQ4XR9MBBFT2CQRM1S", "name": "TypeScript", "category": "Language" },
     { "id": "01M836R4TRF2MEX6Q5ZSSVZVM8", "name": "JavaScript", "category": "Language" },
-    { "id": "01M836R4TS22VHNF7GYJ03P3KG", "name": "PHP", "category": "Language" },
-    { "id": "01M836R4TTDBJQ93N377PQSHY8", "name": "Python", "category": "Language" },
-    { "id": "01M836R4TV9NK00FAXQRCXWYPM", "name": "PowerShell", "category": "Language" },
     { "id": "01M836R4TWWHJ87F52803N4TQC", "name": "HTML", "category": "Language" },
     { "id": "01M836R4TXRMYM27K86M2DXKKE", "name": "CSS", "category": "Language" },
     { "id": "01M836R4TYJVCG01DJEHPC0VXB", "name": "Sass", "category": "Language" },
     { "id": "01M836R4TZ5VE1VFQAC2BGRFCS", "name": "React", "category": "Framework" },
     { "id": "01M836R4V0DXB1VD18H5445QHK", "name": "React Router v7", "category": "Framework" },
     { "id": "01M836R4V14THXVH8A7R9CRVQV", "name": "Next.js", "category": "Framework" },
-    { "id": "01M836R4V206PT48JHENJAB4WA", "name": "Node.js", "category": "Framework" },
+    { "id": "01M836R4V206PT48JHENJAB4WA", "name": "Node.js", "category": "Language" },
     { "id": "01M836R4V3EKXD1NPBPMDWZBMD", "name": "Tailwind CSS", "category": "Framework" },
-    { "id": "01M836R4V44S9ANBE8SNMMV4B9", "name": "Symfony", "category": "Framework" },
-    { "id": "01M836R4V5ZQRN5QSPVSWV8VBF", "name": "Twig", "category": "Framework" },
-    { "id": "01M836R4V6B8HNPPVKHC16CF48", "name": "Smarty", "category": "Framework" },
-    { "id": "01M836R4V7X73WVJZR2QVYK64M", "name": "EC-CUBE", "category": "Framework" },
     { "id": "01M836R4V884EG65QG2VDPXN3C", "name": "MySQL", "category": "Database" },
     { "id": "01M836R4V9K7W0YN7J1XQBB7GE", "name": "Docker", "category": "Infrastructure" },
     { "id": "01M836R4VAD8VETE8HQTBZQNTH", "name": "Kubernetes", "category": "Infrastructure" },
     { "id": "01M836R4VBPYENG5JD07KNE6HG", "name": "AWS", "category": "Infrastructure" },
-    { "id": "01M836R4VC8WDXXHK5RCTZ6FKZ", "name": "GitHub", "category": "Infrastructure" },
-    { "id": "01M836R4VDZC1A3P1HNTRNGXA8", "name": "GitHub Actions", "category": "Infrastructure" },
-    { "id": "01M836R4VE7AG62VCX3BBHBFKG", "name": "GitHub Copilot", "category": "Infrastructure" },
-    { "id": "01M836R4VFQ191X4R8TEKAE1HS", "name": "Sourcetree", "category": "Infrastructure" },
-    { "id": "01M836R4VGH15QNV2R1RQRRVVZ", "name": "ChatGPT", "category": "Infrastructure" },
-    { "id": "01M836R4VHPTZGJA60FXVA2XSH", "name": "microCMS", "category": "Infrastructure" },
-    { "id": "01M836R4VJ8HVMWP9Z84B1KX91", "name": "MakeShop", "category": "Infrastructure" },
-    { "id": "01M836R4VKG46CVV5S79S4TPGD", "name": "Jira", "category": "BusinessTool" },
-    { "id": "01M836R4VMV2FFNVHFFP8RBEZ1", "name": "Backlog", "category": "BusinessTool" },
-    { "id": "01M836R4VNZVWQGHGK9V3YWCAC", "name": "Slack", "category": "BusinessTool" },
-    { "id": "01M836R4VP041CP9YEFA14V3RR", "name": "FigJam", "category": "BusinessTool" }
+    { "id": "01M836R4VDZC1A3P1HNTRNGXA8", "name": "GitHub Actions", "category": "Infrastructure" }
   ],
 
   // 案件。kind: "professional" | "personal"
@@ -55,9 +38,7 @@
         "01M836R4V0DXB1VD18H5445QHK", // React Router v7
         "01M836R4V9K7W0YN7J1XQBB7GE", // Docker
         "01M836R4VAD8VETE8HQTBZQNTH", // Kubernetes
-        "01M836R4VBPYENG5JD07KNE6HG", // AWS
-        "01M836R4VP041CP9YEFA14V3RR", // FigJam
-        "01M836R4VKG46CVV5S79S4TPGD" // Jira
+        "01M836R4VBPYENG5JD07KNE6HG" // AWS
       ],
       "publication": "published"
     },
@@ -72,8 +53,7 @@
         "01M836R4TYJVCG01DJEHPC0VXB", // Sass
         "01M836R4TZ5VE1VFQAC2BGRFCS", // React
         "01M836R4V0DXB1VD18H5445QHK", // React Router v7
-        "01M836R4V9K7W0YN7J1XQBB7GE", // Docker
-        "01M836R4VHPTZGJA60FXVA2XSH" // microCMS
+        "01M836R4V9K7W0YN7J1XQBB7GE" // Docker
       ],
       "publication": "published"
     },
@@ -87,16 +67,9 @@
         "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
         "01M836R4V206PT48JHENJAB4WA", // Node.js
         "01M836R4V3EKXD1NPBPMDWZBMD", // Tailwind CSS
-        "01M836R4TS22VHNF7GYJ03P3KG", // PHP
-        "01M836R4V44S9ANBE8SNMMV4B9", // Symfony
-        "01M836R4V5ZQRN5QSPVSWV8VBF", // Twig
         "01M836R4V884EG65QG2VDPXN3C", // MySQL
         "01M836R4VBPYENG5JD07KNE6HG", // AWS
-        "01M836R4VC8WDXXHK5RCTZ6FKZ", // GitHub
-        "01M836R4VE7AG62VCX3BBHBFKG", // GitHub Copilot
-        "01M836R4V9K7W0YN7J1XQBB7GE", // Docker
-        "01M836R4V7X73WVJZR2QVYK64M", // EC-CUBE
-        "01M836R4VMV2FFNVHFFP8RBEZ1" // Backlog
+        "01M836R4V9K7W0YN7J1XQBB7GE" // Docker
       ],
       "publication": "published"
     },
@@ -108,13 +81,7 @@
       "period": { "start": "2023-11", "end": "2025-02" },
       "techStack": [
         "01M836R4TQ4XR9MBBFT2CQRM1S", // TypeScript
-        "01M836R4V206PT48JHENJAB4WA", // Node.js
-        "01M836R4TTDBJQ93N377PQSHY8", // Python
-        "01M836R4TV9NK00FAXQRCXWYPM", // PowerShell
-        "01M836R4VMV2FFNVHFFP8RBEZ1", // Backlog
-        "01M836R4VNZVWQGHGK9V3YWCAC", // Slack
-        "01M836R4VFQ191X4R8TEKAE1HS", // Sourcetree
-        "01M836R4VGH15QNV2R1RQRRVVZ" // ChatGPT
+        "01M836R4V206PT48JHENJAB4WA" // Node.js
       ],
       "publication": "published"
     },
@@ -127,9 +94,7 @@
       "techStack": [
         "01M836R4TRF2MEX6Q5ZSSVZVM8", // JavaScript
         "01M836R4TWWHJ87F52803N4TQC", // HTML
-        "01M836R4TXRMYM27K86M2DXKKE", // CSS
-        "01M836R4V6B8HNPPVKHC16CF48", // Smarty
-        "01M836R4VJ8HVMWP9Z84B1KX91" // MakeShop
+        "01M836R4TXRMYM27K86M2DXKKE" // CSS
       ],
       "publication": "published"
     },
