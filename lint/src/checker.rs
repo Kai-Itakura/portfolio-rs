@@ -1,5 +1,5 @@
 use syn::visit::{self, Visit};
-use syn::{ExprMethodCall, ImplItem, Item, TraitItem};
+use syn::{ExprMethodCall, File, ImplItem, Item, TraitItem};
 
 use crate::context::Context;
 use crate::rules::Rule;
@@ -21,6 +21,13 @@ impl<'a> Checker<'a> {
 }
 
 impl<'ast> Visit<'ast> for Checker<'_> {
+    fn visit_file(&mut self, file: &'ast File) {
+        for rule in self.rules {
+            rule.check_file(&mut self.cx, file);
+        }
+        visit::visit_file(self, file);
+    }
+
     fn visit_item(&mut self, item: &'ast Item) {
         for rule in self.rules {
             rule.check_item(&mut self.cx, item);

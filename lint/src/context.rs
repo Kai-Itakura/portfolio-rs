@@ -8,6 +8,7 @@ pub struct Context<'a> {
     pub path: &'a Path,
     pub in_domain: bool,
     pub in_query_service: bool,
+    pub query_service_module: Option<String>,
     pub violations: Vec<Violation>,
 }
 
